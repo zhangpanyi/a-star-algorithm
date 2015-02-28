@@ -5,8 +5,9 @@ C++ 实现A*算法，使用二叉堆优化
 ===================================
 <table>
 <tr>
-<td>Cell A</td>
-<td>Cell B</td>
+<td>地图大小</td>
+<td>允许斜走</td>
+<td>耗时</td>
 </tr>
 </table>
 地图大小&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;斜走&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;耗时
