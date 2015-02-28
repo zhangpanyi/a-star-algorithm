@@ -3,7 +3,7 @@ C++ 实现A*算法，使用二叉堆和小对象分配器优化
 
 测试数据
 ===================================
-地图大小<span style="width:50px;"></span>斜走<span style="width:50px;"></span>耗时
+地图大小<span style="width:50px;">&nbsp;</span>斜走<span style="width:50px;"></span>耗时
 
 
 100*100                     否                     0.004s
