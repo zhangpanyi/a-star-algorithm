@@ -100,7 +100,7 @@ private:
 	int					m_col;
 	CanReach			m_canReach;
 	std::vector<Node*>	m_openList;
-	NodeState**			m_allNodes;
+	NodeState*			m_allNodes;
 };
 
 #endif

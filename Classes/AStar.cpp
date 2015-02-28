@@ -26,12 +26,7 @@ void AStar::init(const AStarDef &def)
 	m_row = def.row;
 	m_col = def.col;
 	m_canReach = def.canReach;
-
-	m_allNodes = new NodeState*[m_row];
-	for (int i = 0; i < m_row; ++i)
-	{
-		m_allNodes[i] = new NodeState[m_col];
-	}
+	m_allNodes = new NodeState[m_row * m_col];
 
 	assert(m_row > 0);
 	assert(m_col > 0);
@@ -41,14 +36,9 @@ void AStar::init(const AStarDef &def)
 
 void AStar::clear()
 {
-	for (int i = 0; i < m_row; ++i)
+	for (int i = 0; i < m_row * m_col; ++i)
 	{
-		for (int j = 0; j < m_col; ++j)
-		{
-			if (m_allNodes[i][j].ptr) delete m_allNodes[i][j].ptr;
-		}
-
-		delete[] m_allNodes[i];
+		if (m_allNodes[i].ptr) delete m_allNodes[i].ptr;
 	}
 	delete[] m_allNodes;
 	m_allNodes = nullptr;
@@ -60,16 +50,16 @@ void AStar::clear()
 
 AStar::Node* AStar::isExistInOpenList(const Point &point)
 {
-	if (m_allNodes[point.y][point.x].state == INOPENLIST)
+	if (m_allNodes[point.y * m_row + point.x].state == INOPENLIST)
 	{
-		return m_allNodes[point.y][point.x].ptr;
+		return m_allNodes[point.y * m_row + point.x].ptr;
 	}
 	return nullptr;
 }
 
 bool AStar::isExistInCloseList(const Point &point)
 {
-	return m_allNodes[point.y][point.x].state == INCLOSELIST;
+	return m_allNodes[point.y * m_row + point.x].state == INCLOSELIST;
 }
 
 bool AStar::isCanReach(const Point &target)
@@ -157,8 +147,9 @@ void AStar::notFoundNode(Node *currentNode, Node *newNode, const Point &end)
 
 	m_openList.push_back(newNode);
 
-	m_allNodes[newNode->pos.y][newNode->pos.x].ptr = newNode;
-	m_allNodes[newNode->pos.y][newNode->pos.x].state = INOPENLIST;
+	int index = newNode->pos.y * m_row + newNode->pos.x;
+	m_allNodes[index].ptr = newNode;
+	m_allNodes[index].state = INOPENLIST;
 
 	std::push_heap(m_openList.begin(), m_openList.end(), HeapComp);
 }
@@ -174,15 +165,17 @@ std::deque<Point> AStar::operator() (const AStarDef &def)
 	Node *start = new Node(def.start);
 	m_openList.push_back(start);
 
-	m_allNodes[start->pos.y][start->pos.x].ptr = start;
-	m_allNodes[start->pos.y][start->pos.x].state = INOPENLIST;
+	int index = start->pos.y * m_row + start->pos.x;
+	m_allNodes[index].ptr = start;
+	m_allNodes[index].state = INOPENLIST;
 
 	while (!m_openList.empty())
 	{
 		Node *currentNode = m_openList[0];
 		std::pop_heap(m_openList.begin(), m_openList.end(), HeapComp);
 		m_openList.pop_back();
-		m_allNodes[currentNode->pos.y][currentNode->pos.x].state = INCLOSELIST;
+
+		m_allNodes[currentNode->pos.y * m_row + currentNode->pos.x].state = INCLOSELIST;
 
 		surround.clear();
 		searchCanReach(surround, currentNode->pos, def.allowCorner);
