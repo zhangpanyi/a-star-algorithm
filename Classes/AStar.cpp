@@ -50,9 +50,10 @@ void AStar::clear()
 
 AStar::Node* AStar::isExistInOpenList(const Point &point)
 {
-	if (m_allNodes[point.y * m_row + point.x].state == INOPENLIST)
+	NodeState &node = m_allNodes[point.y * m_row + point.x];
+	if (node.state == INOPENLIST)
 	{
-		return m_allNodes[point.y * m_row + point.x].ptr;
+		return node.ptr;
 	}
 	return nullptr;
 }
@@ -113,14 +114,14 @@ void AStar::searchCanReach(std::vector<Point> &surround, const Point &current, b
 	}
 }
 
-int AStar::calculG(Node *lastNode, const Point &current)
+inline int AStar::calculG(Node *lastNode, const Point &current)
 {
 	int value = ((abs(current.x - lastNode->pos.x) + abs(current.y - lastNode->pos.y)) == 2 ? OBLIQUE : STEP);
 	value += lastNode->g;
 	return value;
 }
 
-int AStar::calculH(const Point &current, const Point &end)
+inline int AStar::calculH(const Point &current, const Point &end)
 {
 	int value = abs(end.x - current.x) + abs(end.y - current.y);
 	return value * STEP;
@@ -147,9 +148,9 @@ void AStar::notFoundNode(Node *currentNode, Node *newNode, const Point &end)
 
 	m_openList.push_back(newNode);
 
-	int index = newNode->pos.y * m_row + newNode->pos.x;
-	m_allNodes[index].ptr = newNode;
-	m_allNodes[index].state = INOPENLIST;
+	NodeState &node = m_allNodes[newNode->pos.y * m_row + newNode->pos.x];
+	node.ptr = newNode;
+	node.state = INOPENLIST;
 
 	std::push_heap(m_openList.begin(), m_openList.end(), HeapComp);
 }
@@ -165,9 +166,9 @@ std::deque<Point> AStar::operator() (const AStarDef &def)
 	Node *start = new Node(def.start);
 	m_openList.push_back(start);
 
-	int index = start->pos.y * m_row + start->pos.x;
-	m_allNodes[index].ptr = start;
-	m_allNodes[index].state = INOPENLIST;
+	NodeState &node = m_allNodes[start->pos.y * m_row + start->pos.x];
+	node.ptr = start;
+	node.state = INOPENLIST;
 
 	while (!m_openList.empty())
 	{
