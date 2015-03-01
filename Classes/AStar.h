@@ -35,12 +35,12 @@ typedef std::function<bool(const Point&)> CanReach;
 
 struct AStarDef
 {
-	bool		allowCorner;
-	int		row;
-	int		col;
-	Point		start;
-	Point		end;
-	CanReach	canReach;
+	bool allowCorner;
+	int row;
+	int col;
+	Point start;
+	Point end;
+	CanReach canReach;
 
 	AStarDef() : row(0), col(0), canReach(nullptr), allowCorner(false) {}
 };
@@ -50,11 +50,10 @@ class AStar
 public:
 	struct Node
 	{
-		char	t;
 		int	g;
 		int	h;
-		Point	pos;
-		Node*	last;
+		Point pos;
+		Node* last;
 
 		Node(const Point &p) : g(0), h(0), pos(p), last(nullptr) {}
 
@@ -72,9 +71,8 @@ public:
 
 	struct NodeState
 	{
-		char	state;
-		Node*	ptr;
-
+		Node* ptr;
+		char state;
 		NodeState() : ptr(nullptr), state(NOTEXIST) {};
 	};
 
@@ -103,11 +101,11 @@ private:
 	void notFoundNode(Node *currentNode, Node *newNode, const Point &end);
 
 private:
-	int			m_row;
-	int			m_col;
-	CanReach		m_canReach;
-	std::vector<Node*>	m_openList;
-	NodeState*		m_allNodes;
+	int m_row;
+	int m_col;
+	CanReach m_canReach;
+	NodeState* m_allNodes;
+	std::vector<Node*> m_openList;
 };
 
 #endif
