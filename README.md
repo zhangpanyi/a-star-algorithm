@@ -1,6 +1,9 @@
 # AStar
 C++ 实现A*算法，使用二叉堆和小对象分配器进行优化
 
+测试环境
+<a href="http://s796.photobucket.com/user/zhangpanyi/media/Link/circlegallery_zps4321f105.png.html" target="_blank"><img src="http://i796.photobucket.com/albums/yy247/zhangpanyi/Link/circlegallery_zps4321f105.png" border="0" alt=" photo circlegallery_zps4321f105.png"/></a>
+
 测试数据
 ===================================
 <table>
