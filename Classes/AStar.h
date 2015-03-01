@@ -91,6 +91,7 @@ private:
 	void clear();
 
 	void init(const AStarDef &def);
+	bool validAStarDef(const AStarDef &def);
 
 	Node* isExistInOpenList(const Point &point);
 	bool isExistInCloseList(const Point &point);

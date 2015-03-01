@@ -1,5 +1,5 @@
-﻿#include <assert.h>
-#include <iostream>
+﻿#include <iostream>
+#include <assert.h>
 #include "AStar.h"
 
 const int STEP = 10;
@@ -27,11 +27,6 @@ void AStar::init(const AStarDef &def)
 	m_col = def.col;
 	m_canReach = def.canReach;
 	m_allNodes = new NodeState[m_row * m_col];
-
-	assert(m_row > 0);
-	assert(m_col > 0);
-	assert(m_canReach);
-	assert(m_openList.empty());
 }
 
 void AStar::clear()
@@ -185,59 +180,81 @@ void AStar::notFoundNode(Node *currentNode, Node *newNode, const Point &end)
 	std::push_heap(m_openList.begin(), m_openList.end(), HeapComp);
 }
 
+inline bool AStar::validAStarDef(const AStarDef &def)
+{
+	if (def.canReach && def.col >= 0 && def.row >= 0
+		&& (def.start.x >= 0 && def.start.x < def.col)
+		&& (def.start.y >= 0 && def.start.y < def.row)
+		&& (def.end.x >= 0 && def.end.x < def.col)
+		&& (def.end.y >= 0 && def.end.y < def.row)
+		)
+	{
+		return true;
+	}
+	return false;
+}
+
 std::deque<Point> AStar::operator() (const AStarDef &def)
 {
-	init(def);
-
 	std::deque<Point> searchPath;
-	std::vector<Point> surround;
-	surround.reserve(8);
 
-	Node *start = new Node(def.start);
-	m_openList.push_back(start);
-
-	NodeState &node = m_allNodes[start->pos.y * m_row + start->pos.x];
-	node.ptr = start;
-	node.state = INOPENLIST;
-
-	while (!m_openList.empty())
+	if (validAStarDef(def))
 	{
-		Node *currentNode = m_openList[0];
-		std::pop_heap(m_openList.begin(), m_openList.end(), HeapComp);
-		m_openList.pop_back();
+		init(def);
+		std::vector<Point> surround;
+		surround.reserve(8);
 
-		m_allNodes[currentNode->pos.y * m_row + currentNode->pos.x].state = INCLOSELIST;
+		Node *start = new Node(def.start);
+		m_openList.push_back(start);
 
-		surround.clear();
-		searchCanReach(surround, currentNode->pos, def.allowCorner);
+		NodeState &node = m_allNodes[start->pos.y * m_row + start->pos.x];
+		node.ptr = start;
+		node.state = INOPENLIST;
 
-		for (auto itr = surround.begin(); itr != surround.end(); ++itr)
+		while (!m_openList.empty())
 		{
-			Node *newNode = isExistInOpenList(*itr);
-			if (newNode)
-			{
-				foundNode(currentNode, newNode);
-			}
-			else
-			{
-				newNode = new Node(*itr);
-				notFoundNode(currentNode, newNode, def.end);
+			Node *currentNode = m_openList[0];
+			std::pop_heap(m_openList.begin(), m_openList.end(), HeapComp);
+			m_openList.pop_back();
 
-				if ((*itr) == def.end)
-				{			
-					while (newNode->last)
+			m_allNodes[currentNode->pos.y * m_row + currentNode->pos.x].state = INCLOSELIST;
+
+			surround.clear();
+			searchCanReach(surround, currentNode->pos, def.allowCorner);
+
+			for (auto itr = surround.begin(); itr != surround.end(); ++itr)
+			{
+				Node *newNode = isExistInOpenList(*itr);
+				if (newNode)
+				{
+					foundNode(currentNode, newNode);
+				}
+				else
+				{
+					newNode = new Node(*itr);
+					notFoundNode(currentNode, newNode, def.end);
+
+					if ((*itr) == def.end)
 					{
-						searchPath.push_front(newNode->pos);
-						newNode = newNode->last;
+						while (newNode->last)
+						{
+							searchPath.push_front(newNode->pos);
+							newNode = newNode->last;
+						}
+						m_openList.clear();
+						break;
 					}
-					m_openList.clear();
-					break;
 				}
 			}
 		}
-	}
 
-	clear();
+		clear();
+	}
+	else
+	{
+		std::cerr << "Invalid AStarDef!" << std::endl;
+		assert(false);
+	}
 
 	return searchPath;
 }
