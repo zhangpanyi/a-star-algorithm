@@ -5,7 +5,6 @@ Created by Zhangpanyi on 2015
 
 zhangpanyi@live.com
 ****************************************************************************/
-
 #ifndef ASTAR_H
 #define ASTAR_H
 
