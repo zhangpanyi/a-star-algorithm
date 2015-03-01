@@ -6,7 +6,19 @@ using namespace std;
 
 int main()
 {
-	char aStarMap[1000][1000] = {0};
+	char aStarMap[1000][1000] =
+	{
+		{ 0, 1, 0, 0, 0, 1, 0, 0, 0, 0 },
+		{ 0, 0, 0, 1, 0, 1, 0, 1, 0, 1 },
+		{ 1, 1, 1, 1, 0, 1, 0, 1, 0, 1 },
+		{ 0, 0, 0, 1, 0, 0, 0, 1, 0, 1 },
+		{ 0, 1, 0, 1, 1, 1, 1, 1, 0, 1 },
+		{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 1 },
+		{ 0, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+		{ 0, 0, 0, 0, 1, 0, 0, 0, 1, 0 },
+		{ 1, 1, 0, 0, 1, 0, 1, 0, 0, 0 },
+		{ 0, 0, 0, 0, 0, 0, 1, 0, 1, 0 },
+	};
 
 	auto CanReach = [&](const Point &point)
 	{
@@ -18,7 +30,7 @@ int main()
 	def.col = 1000;
 	def.start = Point(0, 0);
 	def.end = Point(999, 999);
-	def.allowCorner = true;
+	def.allowCorner = false;
 	def.canReach = CanReach;
 
 	clock_t start, end;

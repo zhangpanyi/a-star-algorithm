@@ -114,17 +114,47 @@ void AStar::searchCanReach(std::vector<Point> &surround, const Point &current, b
 	}
 }
 
-inline int AStar::calculG(Node *lastNode, const Point &current)
+int AStar::calculG(Node *lastNode, const Point &current)
 {
 	int value = ((abs(current.x - lastNode->pos.x) + abs(current.y - lastNode->pos.y)) == 2 ? OBLIQUE : STEP);
 	value += lastNode->g;
 	return value;
 }
 
-inline int AStar::calculH(const Point &current, const Point &end)
+int AStar::calculH(const Point &current, const Point &end)
 {
 	int value = abs(end.x - current.x) + abs(end.y - current.y);
 	return value * STEP;
+}
+
+int AStar::getIndex(Node *pNode)
+{
+	for (unsigned int i = 0; i < m_openList.size(); ++i)
+	{
+		if (m_openList[i]->pos == pNode->pos)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+void AStar::percolateUp(int hole)
+{
+	int parent = 0;
+	while (hole > 1)
+	{
+		parent = (hole - 1) / 2;
+		if (m_openList[hole]->f() < m_openList[parent]->f())
+		{
+			std::swap(m_openList[hole], m_openList[parent]);
+			hole = parent;
+		}
+		else
+		{
+			break;
+		}
+	}
 }
 
 void AStar::foundNode(Node *currentNode, Node *newNode)
@@ -136,7 +166,7 @@ void AStar::foundNode(Node *currentNode, Node *newNode)
 		newNode->g = newG;
 		newNode->last = currentNode;
 
-		std::sort_heap(m_openList.begin(), m_openList.end(), HeapComp);
+		percolateUp(getIndex(newNode));
 	}
 }
 

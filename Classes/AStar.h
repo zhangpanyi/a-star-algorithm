@@ -55,6 +55,11 @@ public:
 		Point pos;
 		Node* last;
 
+		int f()
+		{
+			return g + h;
+		}
+
 		Node(const Point &p) : g(0), h(0), pos(p), last(nullptr) {}
 
 		void* operator new(std::size_t size)
@@ -97,6 +102,8 @@ private:
 	int calculG(Node *lastNode, const Point &current);
 	int calculH(const Point &current, const Point &end);
 
+	int getIndex(Node *pNode);
+	void percolateUp(int hole);
 	void foundNode(Node *currentNode, Node *newNode);
 	void notFoundNode(Node *currentNode, Node *newNode, const Point &end);
 
