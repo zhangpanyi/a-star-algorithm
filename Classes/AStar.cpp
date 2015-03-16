@@ -7,7 +7,7 @@ const int OBLIQUE = 14;
 
 bool HeapComp(const AStar::Node *a, const AStar::Node *b)
 {
-	return (a->g + a->h) > (b->g + b->h);
+	return a->f() > b->f();
 }
 
 AStar::AStar()
