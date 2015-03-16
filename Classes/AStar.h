@@ -55,7 +55,7 @@ public:
 		Point pos;
 		Node* last;
 
-		int f()
+		int f() const
 		{
 			return g + h;
 		}
