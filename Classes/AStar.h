@@ -203,8 +203,9 @@ private:
 private:
 	int					_row;				// 地图行数
 	int					_col;				// 地图列数
+	int					_mapSize;			// 节点地图大小
 	CanReach			_callBack;			// 查询地图是否可通行的回调函数
-	NodeState*			_nodeMaps;			// 节点图
+	NodeState*			_nodeMaps;			// 节点地图
 	std::vector<Node*>	_openList;			// 开启列表
 };
 
