@@ -1,10 +1,11 @@
-﻿/****************************************************************************
+/****************************************************************************
 Copyright (c) 2015 Zhangpanyi
 
 Created by Zhangpanyi on 2015
 
 zhangpanyi@live.com
 ****************************************************************************/
+
 #ifndef ASTAR_H
 #define ASTAR_H
 
@@ -17,30 +18,39 @@ zhangpanyi@live.com
 #define INOPENLIST 1
 #define INCLOSELIST 2
 
-struct Point
+/**
+ * 格子位置
+ */
+struct Grid
 {
-	int x;
-	int y;
+	int row;
+	int col;
 
-	Point() : x(0), y(0) {}
-	Point(int a, int b) : x(a), y(b) {}
+	Grid() : row(0), col(0) {}
+	Grid(int nRow, int nCol) : row(nRow), col(nCol) {}
 
-	bool operator== (const Point &Incoming) const
+	bool operator== (const Grid &incoming) const
 	{
-		return x == Incoming.x && y == Incoming.y;
+		return row == incoming.row && col == incoming.col;
 	}
 };
 
-typedef std::function<bool(const Point&)> CanReach;
+/**
+ * 查询函数
+ */
+typedef std::function<bool(const Grid&)> CanReach;
 
+/**
+ * A*算法参数定义
+ */
 struct AStarDef
 {
-	bool allowCorner;
-	int row;
-	int col;
-	Point start;
-	Point end;
-	CanReach canReach;
+	bool		allowCorner;
+	int			row;
+	int			col;
+	Grid		start;
+	Grid		end;
+	CanReach	canReach;
 
 	AStarDef() : row(0), col(0), canReach(nullptr), allowCorner(false) {}
 };
@@ -48,19 +58,24 @@ struct AStarDef
 class AStar
 {
 public:
+	/**
+	 * 格子结点
+	 * 记录g值、h值、和父节点信息
+	 * 使用小对象分配器分配内存
+	 */
 	struct Node
 	{
-		int	g;
-		int	h;
-		Point pos;
-		Node* last;
+		int		g;
+		int		h;
+		Node*	parent;
+		Grid	pos;
 
 		int f() const
 		{
 			return g + h;
 		}
 
-		Node(const Point &p) : g(0), h(0), pos(p), last(nullptr) {}
+		Node(const Grid &p) : g(0), h(0), pos(p), parent(nullptr) {}
 
 		void* operator new(std::size_t size)
 		{
@@ -68,16 +83,20 @@ public:
 			return ptr;
 		}
 
-			void operator delete(void* p) throw()
+		void operator delete(void* p) throw()
 		{
 			if (p) BlockAllocator::getInstance()->free(p, sizeof(Node));
 		}
 	};
 
+	/**
+	 * 保存节点位于开启列表或者关闭列表的信息
+	 * 以及与之对应的节点指针信息
+	 */
 	struct NodeState
 	{
-		Node* ptr;
-		char state;
+		char	state;
+		Node*	ptr;
 		NodeState() : ptr(nullptr), state(NOTEXIST) {};
 	};
 
@@ -85,35 +104,108 @@ public:
 	AStar();
 	~AStar();
 
-	std::deque<Point> operator() (const AStarDef &def);
+public:
+	/**
+	 * 执行A*算法
+	 * @ 参数 def A*算法参数定义
+	 * @ 返回搜索路径
+	 */
+	std::deque<Grid> operator() (const AStarDef &def);
 
 private:
+	/**
+	 * 清理内存
+	 */
 	void clear();
 
+	/**
+	 * 初始化
+	 * @ 参数 def A*算法参数定义
+	 */
 	void init(const AStarDef &def);
+
+	/**
+	 * 检测 A*算法参数定义是否有效
+	 * @ 参数 def A*算法参数定义
+	 */
 	bool validAStarDef(const AStarDef &def);
 
-	Node* isExistInOpenList(const Point &point);
-	bool isExistInCloseList(const Point &point);
+private:
+	/**
+	 * 格子是否存在于开启列表
+	 * @ 参数 Grid 格子位置
+	 * @ 存在返回格子结点的指针，不存在返回nullptr
+	 */
+	Node* isExistInOpenList(const Grid &grid);
 
-	bool isCanReach(const Point &target);
-	bool isCanReach(const Point &current, const Point &target, bool allowCorner);
-	void searchCanReach(std::vector<Point> &surround, const Point &current, bool allowCorner);
+	/**
+	 * 格子是否存在于关闭列表
+	 * @ 参数 Grid 格子位置
+	 * @ 存在返回true，不存在返回false
+	 */
+	bool isExistInCloseList(const Grid &grid);
 
-	int calculG(Node *lastNode, const Point &current);
-	int calculH(const Point &current, const Point &end);
+	/**
+	 * 查询格子是否可通行
+	 * @ 参数 target 目标格
+	 * @ 成功返回true，失败返回false
+	 */
+	bool isCanReach(const Grid &target);
 
+	/**
+	 * 查询格子是否可到达
+	 * @ 参数 current 当前格位置, target 目标格位置, allowCorner 是否允许斜走
+	 * @ 成功返回true，失败返回false
+	 */
+	bool isCanReached(const Grid &current, const Grid &target, bool allowCorner);
+
+	/**
+	 * 搜索可通行的格子
+	 * @ 参数 surround 存放搜索结果的数组, current 当前格, allowCorner 是否允许斜走
+	 */
+	void searchCanReached(std::vector<Grid> &surround, const Grid &current, bool allowCorner);
+
+	/**
+	 * 计算G值
+	 * @ 参数 parent 父节点, current 当前格
+	 */
+	int calculG(Node *parent, const Grid &current);
+
+	/**
+	 * 计算H值
+	 * @ 参数 current 当前格, end 终点格
+	 */
+	int calculH(const Grid &current, const Grid &end);
+
+	/**
+	 * 获取节点在开启列表中的索引值
+	 * @ 失败返回-1
+	 */
 	int getIndex(Node *pNode);
+
+	/**
+	 * 开启列表上滤(二叉堆上滤)
+	 * @ 参数 hole 上滤位置
+	 */
 	void percolateUp(int hole);
-	void foundNode(Node *currentNode, Node *newNode);
-	void notFoundNode(Node *currentNode, Node *newNode, const Point &end);
 
 private:
-	int m_row;
-	int m_col;
-	CanReach m_canReach;
-	NodeState* m_allNodes;
-	std::vector<Node*> m_openList;
+	/**
+	 * 当节点存在于开启列表中的处理函数
+	 */
+	void foundNode(Node *currentNode, Node *newNode);
+
+	/**
+	 * 当节点不存在于开启列表中的处理函数
+	 */
+	void notFoundNode(Node *currentNode, Node *newNode, const Grid &end);
+
+private:
+	int					_row;				// 地图行数
+	int					_col;				// 地图列数
+	CanReach			_callBack;			// 查询地图是否可通行的回调函数
+	NodeState*			_nodeMaps;			// 节点图
+	std::vector<Node*>	_openList;			// 开启列表
 };
 
 #endif
