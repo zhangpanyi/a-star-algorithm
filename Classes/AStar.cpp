@@ -14,6 +14,7 @@ bool HeapComp(const AStar::Node *a, const AStar::Node *b)
 AStar::AStar()
 	: _row(0)
 	, _col(0)
+	, _mapSize(0)
 	, _nodeMaps(nullptr)
 	, _callBack(nullptr)
 {
@@ -21,6 +22,10 @@ AStar::AStar()
 
 AStar::~AStar()
 {
+	if (_nodeMaps)
+	{
+		delete[] _nodeMaps;
+	}
 }
 
 // 初始化
@@ -29,7 +34,21 @@ void AStar::init(const AStarDef &def)
 	_row = def.row;
 	_col = def.col;
 	_callBack = def.canReach;
-	_nodeMaps = new NodeState[_row * _col];
+
+	if (_nodeMaps)
+	{
+		if (_mapSize < _row * _col)
+		{
+			delete[] _nodeMaps;
+			_mapSize = _row * _col;
+			_nodeMaps = new NodeState[_mapSize];
+		}
+	}
+	else
+	{
+		_mapSize = _row * _col;
+		_nodeMaps = new NodeState[_mapSize];
+	}
 }
 
 // 清理
@@ -37,11 +56,13 @@ void AStar::clear()
 {
 	for (int i = 0; i < _row * _col; ++i)
 	{
-		if (_nodeMaps[i].ptr) delete _nodeMaps[i].ptr;
+		if (_nodeMaps[i].ptr)
+		{
+			delete _nodeMaps[i].ptr;
+			_nodeMaps[i].ptr = nullptr;
+		}
 	}
-	delete[] _nodeMaps;
-	_nodeMaps = nullptr;
-
+	
 	_row = 0;
 	_col = 0;
 	_callBack = nullptr;
@@ -268,7 +289,6 @@ std::deque<Grid> AStar::operator() (const AStarDef &def)
 				}
 			}
 		}
-
 		clear();
 	}
 	else
