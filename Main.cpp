@@ -20,16 +20,16 @@ int main()
 		{ 0, 0, 0, 0, 0, 0, 1, 0, 1, 0 },
 	};
 
-	auto CanReach = [&](const Point &point)
+	auto CanReach = [&](const Grid &grid)
 	{
-		return aStarMap[point.y][point.x] == 0;
+		return aStarMap[grid.row][grid.col] == 0;
 	};
 
 	AStarDef def;
 	def.row = 1000;
 	def.col = 1000;
-	def.start = Point(0, 0);
-	def.end = Point(999, 999);
+	def.start = Grid(0, 0);
+	def.end = Grid(999, 999);
 	def.allowCorner = false;
 	def.canReach = CanReach;
 
@@ -37,12 +37,10 @@ int main()
 	start = clock();
 
 	AStar astar;
-	std::deque<Point> path = astar(def);
+	std::deque<Grid> path = astar(def);
 
 	end = clock();
 	cout << "Run time: " << (double)(end - start) / CLOCKS_PER_SEC << "s" << endl;
-
-	system("pause");
 
 	return 0;
 }
