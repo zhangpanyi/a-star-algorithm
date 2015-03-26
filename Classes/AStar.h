@@ -1,10 +1,10 @@
 /****************************************************************************
-Copyright (c) 2015 Zhangpanyi
+ Copyright (c) 2015 Zhangpanyi
 
-Created by Zhangpanyi on 2015
+ Created by Zhangpanyi on 2015
 
-zhangpanyi@live.com
-****************************************************************************/
+ zhangpanyi@live.com
+ ****************************************************************************/
 
 #ifndef ASTAR_H
 #define ASTAR_H
@@ -201,12 +201,12 @@ private:
 	void notFoundNode(Node *currentNode, Node *newNode, const Grid &end);
 
 private:
-	int					_row;				// 地图行数
-	int					_col;				// 地图列数
-	int					_mapSize;			// 节点地图大小
-	CanReach			_callBack;			// 查询地图是否可通行的回调函数
-	NodeState*			_nodeMaps;			// 节点地图
-	std::vector<Node*>	_openList;			// 开启列表
+	int					m_row;				// 地图行数
+	int					m_col;				// 地图列数
+	int					m_mapSize;			// 节点地图大小
+	CanReach			m_callBack;			// 查询地图是否可通行的回调函数
+	NodeState*			m_nodeMaps;			// 节点地图
+	std::vector<Node*>	m_openList;			// 开启列表
 };
 
 #endif
