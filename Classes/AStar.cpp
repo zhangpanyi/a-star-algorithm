@@ -11,82 +11,81 @@ bool HeapComp(const AStar::Node *a, const AStar::Node *b)
 	return a->f() > b->f();
 }
 
-AStar::AStar()
-	: _row(0)
-	, _col(0)
-	, _mapSize(0)
-	, _nodeMaps(nullptr)
-	, _callBack(nullptr)
+AStar::AStar()	: m_row(0)
+	, m_col(0)
+	, m_mapSize(0)
+	, m_nodeMaps(nullptr)
+	, m_callBack(nullptr)
 {
 }
 
 AStar::~AStar()
 {
-	if (_nodeMaps)
+	if (m_nodeMaps)
 	{
-		delete[] _nodeMaps;
+		delete[] m_nodeMaps;
 	}
 }
 
 // 初始化
 void AStar::init(const AStarDef &def)
 {
-	_row = def.row;
-	_col = def.col;
-	_callBack = def.canReach;
+	m_row = def.row;
+	m_col = def.col;
+	m_callBack = def.canReach;
 
-	if (_nodeMaps)
+	if (m_nodeMaps)
 	{
-		if (_mapSize < _row * _col)
+		if (m_mapSize < m_row * m_col)
 		{
-			delete[] _nodeMaps;
-			_mapSize = _row * _col;
-			_nodeMaps = new NodeState[_mapSize];
+			delete[] m_nodeMaps;
+			m_mapSize = m_row * m_col;
+			m_nodeMaps = new NodeState[m_mapSize];
 		}
 	}
 	else
 	{
-		_mapSize = _row * _col;
-		_nodeMaps = new NodeState[_mapSize];
+		m_mapSize = m_row * m_col;
+		m_nodeMaps = new NodeState[m_mapSize];
 	}
 }
 
 // 清理
 void AStar::clear()
 {
-	for (int i = 0; i < _row * _col; ++i)
+	for (int i = 0; i < m_row * m_col; ++i)
 	{
-		if (_nodeMaps[i].ptr)
+		if (m_nodeMaps[i].ptr)
 		{
-			delete _nodeMaps[i].ptr;
-			_nodeMaps[i].ptr = nullptr;
+			delete m_nodeMaps[i].ptr;
+			m_nodeMaps[i].ptr = nullptr;
 		}
 	}
-	
-	_row = 0;
-	_col = 0;
-	_callBack = nullptr;
+
+	m_row = 0;
+	m_col = 0;
+	m_callBack = nullptr;
 }
 
 // 格子是否存在于开启列表
 AStar::Node* AStar::isExistInOpenList(const Grid &grid)
 {
-	NodeState &node = _nodeMaps[grid.row * _row + grid.col];
+	NodeState &node = m_nodeMaps[grid.row * m_row + grid.col];
 	return node.state == INOPENLIST ? node.ptr : nullptr;
 }
 
 // 格子是否存在于关闭列表
 bool AStar::isExistInCloseList(const Grid &point)
 {
-	return _nodeMaps[point.row * _row + point.col].state == INCLOSELIST;
+	return m_nodeMaps[point.row * m_row + point.col].state == INCLOSELIST;
 }
 
 // 查询格子是否可通行
 bool AStar::isCanReach(const Grid &target)
 {
-	if (target.col >= 0 && target.col < _col && target.row >= 0 && target.row < _row)
+	if (target.col >= 0 && target.col < m_col && target.row >= 0 && target.row < m_row)
 	{
-		return _callBack(target);
+		return m_callBack(target);
 	}
 	else
 	{
@@ -153,9 +152,9 @@ int AStar::calculH(const Grid &current, const Grid &end)
 // 获取节点在开启列表中的索引值
 int AStar::getIndex(Node *pNode)
 {
-	for (unsigned int i = 0; i < _openList.size(); ++i)
+	for (unsigned int i = 0; i < m_openList.size(); ++i)
 	{
-		if (_openList[i]->pos == pNode->pos)
+		if (m_openList[i]->pos == pNode->pos)
 		{
 			return i;
 		}
@@ -170,9 +169,9 @@ void AStar::percolateUp(int hole)
 	while (hole > 1)
 	{
 		parent = (hole - 1) / 2;
-		if (_openList[hole]->f() < _openList[parent]->f())
+		if (m_openList[hole]->f() < m_openList[parent]->f())
 		{
-			std::swap(_openList[hole], _openList[parent]);
+			std::swap(m_openList[hole], m_openList[parent]);
 			hole = parent;
 		}
 		else
@@ -203,13 +202,13 @@ void AStar::notFoundNode(Node *currentNode, Node *newNode, const Grid &end)
 	newNode->g = calculG(currentNode, newNode->pos);
 	newNode->h = calculH(newNode->pos, end);
 
-	_openList.push_back(newNode);
+	m_openList.push_back(newNode);
 
-	NodeState &node = _nodeMaps[newNode->pos.row * _row + newNode->pos.col];
+	NodeState &node = m_nodeMaps[newNode->pos.row * m_row + newNode->pos.col];
 	node.ptr = newNode;
 	node.state = INOPENLIST;
 
-	std::push_heap(_openList.begin(), _openList.end(), HeapComp);
+	std::push_heap(m_openList.begin(), m_openList.end(), HeapComp);
 }
 
 // A*算法参数定义是否有效
@@ -235,29 +234,29 @@ std::deque<Grid> AStar::operator() (const AStarDef &def)
 	if (validAStarDef(def))
 	{
 		init(def);
-		
+
 		// 周围可通行格
 		std::vector<Grid> around;
 		around.reserve(8);
 
 		// 将起点放入开启列表
 		Node *start = new Node(def.start);
-		_openList.push_back(start);
+		m_openList.push_back(start);
 
 		// 更新节点地图
-		NodeState &node = _nodeMaps[start->pos.row * _row + start->pos.col];
+		NodeState &node = m_nodeMaps[start->pos.row * m_row + start->pos.col];
 		node.ptr = start;
 		node.state = INOPENLIST;
 
-		while (!_openList.empty())
+		while (!m_openList.empty())
 		{
 			// 取出F值最小的节点
-			Node *currentNode = _openList[0];
-			std::pop_heap(_openList.begin(), _openList.end(), HeapComp);
-			_openList.pop_back();
+			Node *currentNode = m_openList[0];
+			std::pop_heap(m_openList.begin(), m_openList.end(), HeapComp);
+			m_openList.pop_back();
 
 			// 放入关闭列表
-			_nodeMaps[currentNode->pos.row * _row + currentNode->pos.col].state = INCLOSELIST;
+			m_nodeMaps[currentNode->pos.row * m_row + currentNode->pos.col].state = INCLOSELIST;
 
 			// 搜索可通行格子
 			around.clear();
@@ -283,7 +282,7 @@ std::deque<Grid> AStar::operator() (const AStarDef &def)
 							searchPath.push_front(newNode->pos);
 							newNode = newNode->parent;
 						}
-						_openList.clear();
+						m_openList.clear();
 						break;
 					}
 				}
