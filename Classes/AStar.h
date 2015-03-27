@@ -14,9 +14,9 @@
 #include <functional>
 #include "BlockAllocator.h"
 
-#define NOTEXIST 0
-#define INOPENLIST 1
-#define INCLOSELIST 2
+#define NOTEXIST		0
+#define IN_OPENLIST		1
+#define IN_CLOSELIST	2
 
 /**
  * 格子位置
@@ -38,19 +38,19 @@ struct Grid
 /**
  * 查询函数
  */
-typedef std::function<bool(const Grid&)> CanReach;
+typedef std::function<bool(const Grid&)> QueryCallBack;
 
 /**
  * A*算法参数定义
  */
 struct AStarDef
 {
-	bool		allowCorner;
-	int			row;
-	int			col;
-	Grid		start;
-	Grid		end;
-	CanReach	canReach;
+	bool			allowCorner;
+	int				row;
+	int				col;
+	Grid			start;
+	Grid			end;
+	QueryCallBack	canReach;
 
 	AStarDef() : row(0), col(0), canReach(nullptr), allowCorner(false) {}
 };
@@ -106,11 +106,11 @@ public:
 
 public:
 	/**
-	 * 执行A*算法
+	 * 执行A*搜索
 	 * @ 参数 def A*算法参数定义
 	 * @ 返回搜索路径
 	 */
-	std::deque<Grid> operator() (const AStarDef &def);
+	std::deque<Grid> search(const AStarDef &def);
 
 private:
 	/**
@@ -204,8 +204,8 @@ private:
 	int					m_row;				// 地图行数
 	int					m_col;				// 地图列数
 	int					m_mapSize;			// 节点地图大小
-	CanReach			m_callBack;			// 查询地图是否可通行的回调函数
-	NodeState*			m_nodeMaps;			// 节点地图
+	NodeState*			m_mapIndex;			// 地图索引
+	QueryCallBack		m_callBack;			// 查询函数
 	std::vector<Node*>	m_openList;			// 开启列表
 };
 
