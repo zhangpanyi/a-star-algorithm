@@ -45,14 +45,14 @@ typedef std::function<bool(const Grid&)> QueryCallBack;
  */
 struct AStarDef
 {
-	bool			allowCorner;
+	bool			allow_corner;
 	int				row;
 	int				col;
 	Grid			start;
 	Grid			end;
-	QueryCallBack	canReach;
+	QueryCallBack	reach;
 
-	AStarDef() : row(0), col(0), canReach(nullptr), allowCorner(false) {}
+	AStarDef() : row(0), col(0), reach(nullptr), allow_corner(false) {}
 };
 
 class AStar
@@ -79,13 +79,13 @@ public:
 
 		void* operator new(std::size_t size)
 		{
-			void *ptr = BlockAllocator::getInstance()->allocate(size);
+			void *ptr = BlockAllocator::GetInstance()->Allocate(size);
 			return ptr;
 		}
 
 		void operator delete(void* p) throw()
 		{
-			if (p) BlockAllocator::getInstance()->free(p, sizeof(Node));
+			if (p) BlockAllocator::GetInstance()->Free(p, sizeof(Node));
 		}
 	};
 
@@ -110,25 +110,25 @@ public:
 	 * @ 参数 def A*算法参数定义
 	 * @ 返回搜索路径
 	 */
-	std::deque<Grid> search(const AStarDef &def);
+	std::deque<Grid> Search(const AStarDef &def);
 
 private:
 	/**
-	 * 清理内存
+	 * 清理
 	 */
-	void clear();
+	void Clear();
 
 	/**
 	 * 初始化
 	 * @ 参数 def A*算法参数定义
 	 */
-	void init(const AStarDef &def);
+	void Init(const AStarDef &def);
 
 	/**
 	 * 检测 A*算法参数定义是否有效
 	 * @ 参数 def A*算法参数定义
 	 */
-	bool validAStarDef(const AStarDef &def);
+	bool ValidAStarDef(const AStarDef &def);
 
 private:
 	/**
@@ -136,77 +136,77 @@ private:
 	 * @ 参数 Grid 格子位置
 	 * @ 存在返回格子结点的指针，不存在返回nullptr
 	 */
-	Node* isExistInOpenList(const Grid &grid);
+	Node* IsExistInOpenList(const Grid &grid);
 
 	/**
 	 * 格子是否存在于关闭列表
 	 * @ 参数 Grid 格子位置
 	 * @ 存在返回true，不存在返回false
 	 */
-	bool isExistInCloseList(const Grid &grid);
+	bool IsExistInCloseList(const Grid &grid);
 
 	/**
 	 * 查询格子是否可通行
 	 * @ 参数 target 目标格
 	 * @ 成功返回true，失败返回false
 	 */
-	bool isCanReach(const Grid &target);
+	bool IsCanReach(const Grid &target);
 
 	/**
 	 * 查询格子是否可到达
 	 * @ 参数 current 当前格位置, target 目标格位置, allowCorner 是否允许斜走
 	 * @ 成功返回true，失败返回false
 	 */
-	bool isCanReached(const Grid &current, const Grid &target, bool allowCorner);
+	bool IsCanReached(const Grid &current, const Grid &target, bool allowCorner);
 
 	/**
 	 * 搜索可通行的格子
 	 * @ 参数 surround 存放搜索结果的数组, current 当前格, allowCorner 是否允许斜走
 	 */
-	void searchCanReached(std::vector<Grid> &surround, const Grid &current, bool allowCorner);
+	void SearchCanReached(std::vector<Grid> &surround, const Grid &current, bool allowCorner);
 
 	/**
 	 * 计算G值
 	 * @ 参数 parent 父节点, current 当前格
 	 */
-	int calculG(Node *parent, const Grid &current);
+	int CalculG(Node *parent, const Grid &current);
 
 	/**
 	 * 计算H值
 	 * @ 参数 current 当前格, end 终点格
 	 */
-	int calculH(const Grid &current, const Grid &end);
+	int CalculH(const Grid &current, const Grid &end);
 
 	/**
 	 * 获取节点在开启列表中的索引值
 	 * @ 失败返回-1
 	 */
-	int getIndex(Node *pNode);
+	int GetIndex(Node *node);
 
 	/**
 	 * 开启列表上滤(二叉堆上滤)
 	 * @ 参数 hole 上滤位置
 	 */
-	void percolateUp(int hole);
+	void PercolateUp(int hole);
 
 private:
 	/**
 	 * 当节点存在于开启列表中的处理函数
 	 */
-	void foundNode(Node *currentNode, Node *newNode);
+	void FoundNode(Node *current_grid, Node *new_grid);
 
 	/**
 	 * 当节点不存在于开启列表中的处理函数
 	 */
-	void notFoundNode(Node *currentNode, Node *newNode, const Grid &end);
+	void NotFoundNode(Node *current_grid, Node *new_grid, const Grid &end);
 
 private:
-	int					nRow_;				// 地图行数
-	int					nCol_;				// 地图列数
-	int					nMapSize_;			// 节点地图大小
-	NodeState*			pMapIndex_;			// 地图索引
-	QueryCallBack		callBack_;			// 查询函数
-	std::vector<Node*>	openList_;			// 开启列表
+	int					num_row_;			// 地图行数
+	int					num_col_;			// 地图列数
+	int					num_map_size_;		// 节点地图大小
+	NodeState*			map_index_;			// 地图索引
+	QueryCallBack		callback_;			// 查询函数
+	std::vector<Node*>	open_list_;			// 开启列表
 };
 
 #endif

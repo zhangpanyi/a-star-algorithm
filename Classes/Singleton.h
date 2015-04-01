@@ -9,14 +9,14 @@ class SingletonBase
 	{
 	public:
 		InstanceTable()
-			: bCleared_(false)
+			: cleared_(false)
 		{
 
 		};
 
 		~InstanceTable()
 		{
-			bCleared_ = true;
+			cleared_ = true;
 			while (!empty())
 			{
 				delete back();
@@ -25,45 +25,45 @@ class SingletonBase
 		}
 
 	public:
-		bool bCleared_;
+		bool cleared_;
 	};
 
 protected:
 	SingletonBase()
 	{
-		sInstanceTable_.push_back(this);
+		s_instance_table_.push_back(this);
 	}
 
 	virtual ~SingletonBase()
 	{
-		if (!sInstanceTable_.bCleared_)
+		if (!s_instance_table_.cleared_)
 		{
-			sInstanceTable_.remove(this);
+			s_instance_table_.remove(this);
 		}
 	}
 
 private:
-	static InstanceTable sInstanceTable_;
+	static InstanceTable s_instance_table_;
 };
 
 template <typename T>
 class Singleton : public SingletonBase
 {
 public:
-	static T* getInstance()
+	static T* GetInstance()
 	{
-		if (sSingleton_ == nullptr)
+		if (s_singleton_ == nullptr)
 		{
-			sSingleton_ = new (std::nothrow) T();
+			s_singleton_ = new (std::nothrow) T();
 		}
-		return sSingleton_;
+		return s_singleton_;
 	}
 
-	static void destroyInstance()
+	static void DestroyInstance()
 	{
-		if (sSingleton_)
+		if (s_singleton_)
 		{
-			delete sSingleton_;
+			delete s_singleton_;
 		}
 	}
 
@@ -75,14 +75,14 @@ protected:
 
 	virtual ~Singleton()
 	{
-		sSingleton_ = nullptr;
+		s_singleton_ = nullptr;
 	};
 
 private:
-	static T* sSingleton_;
+	static T* s_singleton_;
 };
 
-template<typename T> T* Singleton<T>::sSingleton_ = nullptr;
+template<typename T> T* Singleton<T>::s_singleton_ = nullptr;
 
 #define SINGLETON(_class_)					\
 	private:								\

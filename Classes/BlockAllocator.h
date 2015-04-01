@@ -13,20 +13,20 @@ class BlockAllocator final : public Singleton < BlockAllocator >
 	SINGLETON(BlockAllocator);
 
 public:
-	void* allocate(int size);
+	void* Allocate(int size);
 
-	void free(void *p, int size);
+	void Free(void *p, int size);
 
-	void clear();
+	void Clear();
 
 private:
-	int				nChunkCount_;
-	int				nChunkSpace_;
-	struct Chunk*	pChunks_;
-	struct Block*	pFreeLists_[g_blockSizes];
-	static int		sBlockSizes_[g_blockSizes];
-	static char		sBlockSizeLookup_[g_maxBlockSize + 1];
-	static bool		sBlockSizeLookupInitialized_;
+	int				num_chunk_count_;
+	int				num_chunk_space_;
+	struct Chunk*	chunks_;
+	struct Block*	free_lists_[g_blockSizes];
+	static int		block_sizes_[g_blockSizes];
+	static char		s_block_size_lookup_[g_maxBlockSize + 1];
+	static bool		s_block_size_lookup_initialized_;
 };
 
 #endif
