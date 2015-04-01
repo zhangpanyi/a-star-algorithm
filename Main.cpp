@@ -1,5 +1,4 @@
 ﻿#include <time.h>
-#include <vector>
 #include <iostream>
 #include "AStar.h"
 using namespace std;
@@ -42,5 +41,6 @@ int main()
 	end = clock();
 	cout << "Run time: " << (double)(end - start) / CLOCKS_PER_SEC << "s" << endl;
 
+	system("pause");
 	return 0;
 }
