@@ -2,7 +2,6 @@
 #define SINGLETON_H
 
 #include <list>
-#include <algorithm>
 
 class SingletonBase
 {
@@ -10,43 +9,41 @@ class SingletonBase
 	{
 	public:
 		InstanceTable()
-			: m_isCleared(false)
+			: bCleared_(false)
 		{
 
 		};
 
 		~InstanceTable()
 		{
-			m_isCleared = true;
-			for_each(begin(), end(), destroyInstance);
+			bCleared_ = true;
+			while (!empty())
+			{
+				delete back();
+				pop_back();
+			}
 		}
 
 	public:
-		static void destroyInstance(SingletonBase *pInstance)
-		{
-			delete pInstance;
-		}
-
-	public:
-		bool m_isCleared;
+		bool bCleared_;
 	};
 
 protected:
 	SingletonBase()
 	{
-		s_instanceTable.push_back(this);
+		sInstanceTable_.push_back(this);
 	}
 
 	virtual ~SingletonBase()
 	{
-		if (!s_instanceTable.m_isCleared)
+		if (!sInstanceTable_.bCleared_)
 		{
-			s_instanceTable.remove(this);
+			sInstanceTable_.remove(this);
 		}
 	}
 
 private:
-	static InstanceTable s_instanceTable;
+	static InstanceTable sInstanceTable_;
 };
 
 template <typename T>
@@ -55,11 +52,19 @@ class Singleton : public SingletonBase
 public:
 	static T* getInstance()
 	{
-		if (s_singleton == nullptr)
+		if (sSingleton_ == nullptr)
 		{
-			s_singleton = new (std::nothrow) T();
+			sSingleton_ = new (std::nothrow) T();
 		}
-		return s_singleton;
+		return sSingleton_;
+	}
+
+	static void destroyInstance()
+	{
+		if (sSingleton_)
+		{
+			delete sSingleton_;
+		}
 	}
 
 protected:
@@ -70,14 +75,14 @@ protected:
 
 	virtual ~Singleton()
 	{
-		s_singleton = nullptr;
+		sSingleton_ = nullptr;
 	};
 
 private:
-	static T* s_singleton;
+	static T* sSingleton_;
 };
 
-template<typename T> T* Singleton<T>::s_singleton = nullptr;
+template<typename T> T* Singleton<T>::sSingleton_ = nullptr;
 
 #define SINGLETON(_class_)					\
 	private:								\

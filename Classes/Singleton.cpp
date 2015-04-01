@@ -1,4 +1,4 @@
 ﻿#include "Singleton.h"
 
 
-SingletonBase::InstanceTable SingletonBase::s_instanceTable;
+SingletonBase::InstanceTable SingletonBase::sInstanceTable_;

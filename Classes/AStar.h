@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
  Copyright (c) 2015 Zhangpanyi
 
  Created by Zhangpanyi on 2015
@@ -201,12 +201,12 @@ private:
 	void notFoundNode(Node *currentNode, Node *newNode, const Grid &end);
 
 private:
-	int					m_row;				// 地图行数
-	int					m_col;				// 地图列数
-	int					m_mapSize;			// 节点地图大小
-	NodeState*			m_mapIndex;			// 地图索引
-	QueryCallBack		m_callBack;			// 查询函数
-	std::vector<Node*>	m_openList;			// 开启列表
+	int					nRow_;				// 地图行数
+	int					nCol_;				// 地图列数
+	int					nMapSize_;			// 节点地图大小
+	NodeState*			pMapIndex_;			// 地图索引
+	QueryCallBack		callBack_;			// 查询函数
+	std::vector<Node*>	openList_;			// 开启列表
 };
 
 #endif

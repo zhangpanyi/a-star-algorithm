@@ -1,4 +1,4 @@
-#include <time.h>
+﻿#include <time.h>
 #include <vector>
 #include <iostream>
 #include "AStar.h"
@@ -37,7 +37,7 @@ int main()
 	start = clock();
 
 	AStar astar;
-	std::deque<Grid> path = astar(def);
+	std::deque<Grid> path = astar.search(def);
 
 	end = clock();
 	cout << "Run time: " << (double)(end - start) / CLOCKS_PER_SEC << "s" << endl;

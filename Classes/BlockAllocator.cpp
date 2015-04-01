@@ -5,7 +5,7 @@
 #include <assert.h>
 #include "BlockAllocator.h"
 
-int BlockAllocator::s_blockSizes[g_blockSizes] =
+int BlockAllocator::sBlockSizes_[g_blockSizes] =
 {
 	16,		// 0
 	32,		// 1
@@ -22,8 +22,8 @@ int BlockAllocator::s_blockSizes[g_blockSizes] =
 	512,	// 12
 	640,	// 13
 };
-char BlockAllocator::s_blockSizeLookup[g_maxBlockSize + 1];
-bool BlockAllocator::s_blockSizeLookupInitialized;
+char BlockAllocator::sBlockSizeLookup_[g_maxBlockSize + 1];
+bool BlockAllocator::sBlockSizeLookupInitialized_;
 
 struct Chunk
 {
@@ -40,42 +40,42 @@ BlockAllocator::BlockAllocator()
 {
 	assert(g_blockSizes < UCHAR_MAX);
 
-	m_chunkSpace = g_chunkArrayIncrement;
-	m_chunkCount = 0;
-	m_chunks = (Chunk *)malloc(m_chunkSpace * sizeof(Chunk));
+	nChunkSpace_ = g_chunkArrayIncrement;
+	nChunkCount_ = 0;
+	pChunks_ = (Chunk *)malloc(nChunkSpace_ * sizeof(Chunk));
 
-	memset(m_chunks, 0, m_chunkSpace * sizeof(Chunk));
-	memset(m_freeLists, 0, sizeof(m_freeLists));
+	memset(pChunks_, 0, nChunkSpace_ * sizeof(Chunk));
+	memset(pFreeLists_, 0, sizeof(pFreeLists_));
 
-	if (s_blockSizeLookupInitialized == false)
+	if (sBlockSizeLookupInitialized_ == false)
 	{
 		int j = 0;
 		for (int i = 1; i <= g_maxBlockSize; ++i)
 		{
 			assert(j < g_blockSizes);
-			if (i <= s_blockSizes[j])
+			if (i <= sBlockSizes_[j])
 			{
-				s_blockSizeLookup[i] = (char)j;
+				sBlockSizeLookup_[i] = (char)j;
 			}
 			else
 			{
 				++j;
-				s_blockSizeLookup[i] = (char)j;
+				sBlockSizeLookup_[i] = (char)j;
 			}
 		}
 
-		s_blockSizeLookupInitialized = true;
+		sBlockSizeLookupInitialized_ = true;
 	}
 }
 
 BlockAllocator::~BlockAllocator()
 {
-	for (int i = 0; i < m_chunkCount; ++i)
+	for (int i = 0; i < nChunkCount_; ++i)
 	{
-		::free(m_chunks[i].blocks);
+		::free(pChunks_[i].blocks);
 	}
 
-	::free(m_chunks);
+	::free(pChunks_);
 }
 
 void* BlockAllocator::allocate(int size)
@@ -90,33 +90,33 @@ void* BlockAllocator::allocate(int size)
 		return malloc(size);
 	}
 
-	int index = s_blockSizeLookup[size];
+	int index = sBlockSizeLookup_[size];
 	assert(0 <= index && index < g_blockSizes);
 
-	if (m_freeLists[index])
+	if (pFreeLists_[index])
 	{
-		Block *block = m_freeLists[index];
-		m_freeLists[index] = block->next;
+		Block *block = pFreeLists_[index];
+		pFreeLists_[index] = block->next;
 		return block;
 	}
 	else
 	{
-		if (m_chunkCount == m_chunkSpace)
+		if (nChunkCount_ == nChunkSpace_)
 		{
-			Chunk *oldChunks = m_chunks;
-			m_chunkSpace += g_chunkArrayIncrement;
-			m_chunks = (Chunk *)malloc(m_chunkSpace * sizeof(Chunk));
-			memcpy(m_chunks, oldChunks, m_chunkCount * sizeof(Chunk));
-			memset(m_chunks + m_chunkCount, 0, g_chunkArrayIncrement * sizeof(Chunk));
+			Chunk *oldChunks = pChunks_;
+			nChunkSpace_ += g_chunkArrayIncrement;
+			pChunks_ = (Chunk *)malloc(nChunkSpace_ * sizeof(Chunk));
+			memcpy(pChunks_, oldChunks, nChunkCount_ * sizeof(Chunk));
+			memset(pChunks_ + nChunkCount_, 0, g_chunkArrayIncrement * sizeof(Chunk));
 			::free(oldChunks);
 		}
 
-		Chunk *chunk = m_chunks + m_chunkCount;
+		Chunk *chunk = pChunks_ + nChunkCount_;
 		chunk->blocks = (Block *)malloc(g_chunkSize);
 #if defined(_DEBUG)
 		memset(chunk->blocks, 0xcd, g_chunkSize);
 #endif
-		int blockSize = s_blockSizes[index];
+		int blockSize = sBlockSizes_[index];
 		chunk->blockSize = blockSize;
 		int blockCount = g_chunkSize / blockSize;
 		assert(blockCount * blockSize <= g_chunkSize);
@@ -129,8 +129,8 @@ void* BlockAllocator::allocate(int size)
 		Block *last = (Block *)((char *)chunk->blocks + blockSize * (blockCount - 1));
 		last->next = nullptr;
 
-		m_freeLists[index] = chunk->blocks->next;
-		++m_chunkCount;
+		pFreeLists_[index] = chunk->blocks->next;
+		++nChunkCount_;
 
 		return chunk->blocks;
 	}
@@ -151,15 +151,15 @@ void BlockAllocator::free(void *p, int size)
 		return;
 	}
 
-	int index = s_blockSizeLookup[size];
+	int index = sBlockSizeLookup_[size];
 	assert(0 <= index && index < g_blockSizes);
 
 #ifdef _DEBUG
-	int blockSize = s_blockSizes[index];
+	int blockSize = sBlockSizes_[index];
 	bool found = false;
-	for (int i = 0; i < m_chunkCount; ++i)
+	for (int i = 0; i < nChunkCount_; ++i)
 	{
-		Chunk *chunk = m_chunks + i;
+		Chunk *chunk = pChunks_ + i;
 		if (chunk->blockSize != blockSize)
 		{
 			assert((char *)p + blockSize <= (char *)chunk->blocks ||
@@ -180,19 +180,19 @@ void BlockAllocator::free(void *p, int size)
 #endif
 
 	Block *block = (Block *)p;
-	block->next = m_freeLists[index];
-	m_freeLists[index] = block;
+	block->next = pFreeLists_[index];
+	pFreeLists_[index] = block;
 }
 
 void BlockAllocator::clear()
 {
-	for (int i = 0; i < m_chunkCount; ++i)
+	for (int i = 0; i < nChunkCount_; ++i)
 	{
-		::free(m_chunks[i].blocks);
+		::free(pChunks_[i].blocks);
 	}
 
-	m_chunkCount = 0;
-	memset(m_chunks, 0, m_chunkSpace * sizeof(Chunk));
+	nChunkCount_ = 0;
+	memset(pChunks_, 0, nChunkSpace_ * sizeof(Chunk));
 
-	memset(m_freeLists, 0, sizeof(m_freeLists));
+	memset(pFreeLists_, 0, sizeof(pFreeLists_));
 }
