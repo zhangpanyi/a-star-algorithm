@@ -31,5 +31,8 @@
     <ClInclude Include="Classes\Singleton.h">
       <Filter>Classes</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\NonCopyable.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

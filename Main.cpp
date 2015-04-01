@@ -1,6 +1,6 @@
 ﻿#include <time.h>
-#include <iostream>
 #include "AStar.h"
+#include <iostream>
 using namespace std;
 
 int main()

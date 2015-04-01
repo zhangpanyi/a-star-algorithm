@@ -5,9 +5,7 @@
 
  zhangpanyi@live.com
  ****************************************************************************/
-
-#ifndef ASTAR_H
-#define ASTAR_H
+#pragma once
 
 #include <deque>
 #include <vector>
@@ -208,5 +206,3 @@ private:
 	QueryCallBack		callback_;			// 查询函数
 	std::vector<Node*>	open_list_;			// 开启列表
 };
-
-#endif

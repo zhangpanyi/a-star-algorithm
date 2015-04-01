@@ -86,6 +86,7 @@
   <ItemGroup>
     <ClInclude Include="Classes\AStar.h" />
     <ClInclude Include="Classes\BlockAllocator.h" />
+    <ClInclude Include="Classes\NonCopyable.h" />
     <ClInclude Include="Classes\Singleton.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

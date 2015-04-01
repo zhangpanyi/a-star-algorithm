@@ -1,5 +1,4 @@
-﻿#ifndef SINGLETON_H
-#define SINGLETON_H
+﻿#pragma once
 
 #include <list>
 
@@ -84,10 +83,8 @@ private:
 
 template<typename T> T* Singleton<T>::s_singleton_ = nullptr;
 
-#define SINGLETON(_class_)					\
-	private:								\
-		_class_();							\
-		~_class_();							\
-		friend class Singleton<_class_>;	\
-
-#endif
+#define SINGLETON(_class_)				\
+	private:							\
+		_class_();						\
+		~_class_();						\
+		friend class Singleton<_class_>;

@@ -1,14 +1,14 @@
-﻿#ifndef BLOCKALLOCATOR_H
-#define BLOCKALLOCATOR_H
+﻿#pragma once
 
 #include "Singleton.h"
+#include "NonCopyable.h"
 
 const int g_chunkSize = 16 * 1024;
 const int g_maxBlockSize = 640;
 const int g_blockSizes = 14;
 const int g_chunkArrayIncrement = 128;
 
-class BlockAllocator final : public Singleton < BlockAllocator >
+class BlockAllocator final : public Singleton < BlockAllocator >, public NonCopyable
 {
 	SINGLETON(BlockAllocator);
 
@@ -28,5 +28,3 @@ private:
 	static char		s_block_size_lookup_[g_maxBlockSize + 1];
 	static bool		s_block_size_lookup_initialized_;
 };
-
-#endif
