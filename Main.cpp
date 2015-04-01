@@ -5,7 +5,7 @@ using namespace std;
 
 int main()
 {
-	char aStarMap[1000][1000] =
+	char astar_map[1000][1000] =
 	{
 		{ 0, 1, 0, 0, 0, 1, 0, 0, 0, 0 },
 		{ 0, 0, 0, 1, 0, 1, 0, 1, 0, 1 },
@@ -19,9 +19,9 @@ int main()
 		{ 0, 0, 0, 0, 0, 0, 1, 0, 1, 0 },
 	};
 
-	auto CanReach = [&](const Grid &grid)
+	auto CanReach = [&](const Grid &grid)->bool
 	{
-		return aStarMap[grid.row][grid.col] == 0;
+		return astar_map[grid.row][grid.col] == 0;
 	};
 
 	AStarDef def;
