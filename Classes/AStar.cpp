@@ -274,8 +274,8 @@ _EndSearch_:
 	}
 	else
 	{
+		Clear();
 		throw std::exception("Invalid AStarDef!");
-		assert(false);
 	}
 
 	return search_path;

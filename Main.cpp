@@ -35,9 +35,16 @@ int main()
 	clock_t start, end;
 	start = clock();
 
-	AStar astar;
-	std::deque<Grid> path = astar.Search(def);
-
+	try
+	{
+		AStar astar;
+		astar.Search(def);
+	}
+	catch (std::exception e)
+	{
+		cout << e.what() << endl;
+	}
+	
 	end = clock();
 	cout << "Run time: " << (double)(end - start) / CLOCKS_PER_SEC << "s" << endl;
 
