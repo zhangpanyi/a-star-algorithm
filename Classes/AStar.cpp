@@ -199,17 +199,13 @@ void AStar::NotFoundNode(Node *current_grid, Node *new_grid, const Grid &end)
 
 inline bool AStar::ValidAStarDef(const AStarDef &def)
 {
-	if (def.reach
+	return (def.reach
 		&& (def.col >= 0 && def.row >= 0)
 		&& (def.start.col >= 0 && def.start.col < def.col)
 		&& (def.start.row >= 0 && def.start.row < def.row)
 		&& (def.end.col >= 0 && def.end.col < def.col)
 		&& (def.end.row >= 0 && def.end.row < def.row)
-		)
-	{
-		return true;
-	}
-	return false;
+		);
 }
 
 std::deque<Grid> AStar::Search(const AStarDef &def)
@@ -278,7 +274,7 @@ _EndSearch_:
 	}
 	else
 	{
-		std::cerr << "Invalid AStarDef!" << std::endl;
+		throw std::exception("Invalid AStarDef!");
 		assert(false);
 	}
 
