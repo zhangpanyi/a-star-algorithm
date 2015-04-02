@@ -12,11 +12,11 @@ bool HeapComp(const AStar::Node *a, const AStar::Node *b)
 }
 
 AStar::AStar()
-	: num_row_(0)
-	, num_col_(0)
-	, num_map_size_(0)
-	, map_index_(nullptr)
-	, callback_(nullptr)
+: num_row_(0)
+, num_col_(0)
+, num_map_size_(0)
+, map_index_(nullptr)
+, callback_(nullptr)
 {
 }
 
@@ -264,12 +264,12 @@ std::deque<Grid> AStar::Search(const AStarDef &def)
 							search_path.push_front(new_grid->pos);
 							new_grid = new_grid->parent;
 						}
-						goto _EndSearch_;
+						goto EndSearch;
 					}
 				}
 			}
 		}
-_EndSearch_:
+	EndSearch:
 		Clear();
 	}
 	else
