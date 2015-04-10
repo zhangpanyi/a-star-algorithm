@@ -16,7 +16,7 @@ AStar::AStar()
 , num_col_(0)
 , num_map_size_(0)
 , map_index_(nullptr)
-, callback_(nullptr)
+, query_func_(nullptr)
 {
 }
 
@@ -32,7 +32,7 @@ void AStar::Init(const AStarDef &def)
 {
 	num_row_ = def.row;
 	num_col_ = def.col;
-	callback_ = def.reach;
+	query_func_ = def.reach;
 
 	if (map_index_)
 	{
@@ -65,7 +65,7 @@ void AStar::Clear()
 	num_row_ = 0;
 	num_col_ = 0;
 	open_list_.clear();
-	callback_ = nullptr;
+	query_func_ = nullptr;
 }
 
 inline AStar::Node* AStar::IsExistInOpenList(const Grid &grid)
@@ -83,7 +83,7 @@ bool AStar::IsCanReach(const Grid &target)
 {
 	if (target.col >= 0 && target.col < num_col_ && target.row >= 0 && target.row < num_row_)
 	{
-		return callback_(target);
+		return query_func_(target);
 	}
 	else
 	{
@@ -266,7 +266,7 @@ std::deque<Grid> AStar::Search(const AStarDef &def)
 	else
 	{
 		Clear();
-		throw std::exception("Invalid AStarDef!");
+		assert("Invalid AStarDef!");
 	}
 
 	return search_path;

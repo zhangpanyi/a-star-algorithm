@@ -203,6 +203,6 @@ private:
 	int					num_col_;			// 地图列数
 	int					num_map_size_;		// 节点地图大小
 	NodeState*			map_index_;			// 地图索引
-	QueryCallBack		callback_;			// 查询函数
+	QueryCallBack		query_func_;		// 查询函数
 	std::vector<Node*>	open_list_;			// 开启列表
 };
