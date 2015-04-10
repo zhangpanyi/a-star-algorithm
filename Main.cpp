@@ -30,20 +30,13 @@ int main()
 	def.reach = CanReach;
 	def.start = Grid(0, 0);
 	def.end = Grid(999, 999);
-	def.allow_corner = false;
+	def.allow_corner = true;
 
 	clock_t start, end;
 	start = clock();
 
-	try
-	{
-		AStar astar;
-		astar.Search(def);
-	}
-	catch (std::exception e)
-	{
-		cout << e.what() << endl;
-	}
+	AStar astar;
+	auto path = astar.Search(def);
 	
 	end = clock();
 	cout << "Run time: " << (double)(end - start) / CLOCKS_PER_SEC << "s" << endl;
