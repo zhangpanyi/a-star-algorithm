@@ -6,7 +6,7 @@
 const int kStep = 10;
 const int kOblique = 14;
 
-bool HeapComp(const AStar::Node *a, const AStar::Node *b)
+bool CompHeap(const AStar::Node *a, const AStar::Node *b)
 {
 	return a->f() > b->f();
 }
@@ -194,7 +194,7 @@ void AStar::NotFoundNode(Node *current_grid, Node *new_grid, const Grid &end)
 	node.state = IN_OPENLIST;
 
 	open_list_.push_back(new_grid);
-	std::push_heap(open_list_.begin(), open_list_.end(), HeapComp);
+	std::push_heap(open_list_.begin(), open_list_.end(), CompHeap);
 }
 
 inline bool AStar::ValidAStarDef(const AStarDef &def)
@@ -213,37 +213,28 @@ std::deque<Grid> AStar::Search(const AStarDef &def)
 	std::deque<Grid> search_path;
 	if (ValidAStarDef(def))
 	{
-		// 初始化
 		Init(def);
 
-		// 周围可通行格
 		std::vector<Grid> around;
 		around.reserve(def.allow_corner ? 8 : 4);
 
-		// 将起点放入开启列表
 		Node *start = new Node(def.start);
 		open_list_.push_back(start);
 
-		// 更新地图索引
 		NodeState &node = map_index_[start->pos.row * num_row_ + start->pos.col];
 		node.ptr = start;
 		node.state = IN_OPENLIST;
 
 		while (!open_list_.empty())
 		{
-			// 取出F值最小的节点
 			Node *current_grid = open_list_[0];
-			std::pop_heap(open_list_.begin(), open_list_.end(), HeapComp);
+			std::pop_heap(open_list_.begin(), open_list_.end(), CompHeap);
 			open_list_.pop_back();
-
-			// 放入关闭列表
 			map_index_[current_grid->pos.row * num_row_ + current_grid->pos.col].state = IN_CLOSELIST;
 
-			// 搜索可通行格子
 			around.clear();
 			SearchCanReached(around, current_grid->pos, def.allow_corner);
 
-			// 遍历可通行格子
 			unsigned int size = around.size();
 			for (unsigned int index = 0; index < size; ++index)
 			{
