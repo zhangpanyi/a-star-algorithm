@@ -88,3 +88,9 @@ template<typename T> T* Singleton<T>::s_singleton_ = nullptr;
 		_class_();						\
 		~_class_();						\
 		friend class Singleton<_class_>;
+
+#define SINGLETON_DEFAULT(_class_)		\
+	private:							\
+		_class_() {};					\
+		~_class_() {};					\
+		friend class Singleton<_class_>;

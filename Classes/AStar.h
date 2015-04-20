@@ -77,13 +77,13 @@ public:
 
 		void* operator new(std::size_t size)
 		{
-			void *ptr = BlockAllocator::GetInstance()->Allocate(size);
+			void *ptr = SOA::GetInstance()->Allocate(size);
 			return ptr;
 		}
 
 		void operator delete(void* p) throw()
 		{
-			if (p) BlockAllocator::GetInstance()->Free(p, sizeof(Node));
+			if (p) SOA::GetInstance()->Free(p, sizeof(Node));
 		}
 	};
 
