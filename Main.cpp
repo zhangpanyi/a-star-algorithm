@@ -19,7 +19,7 @@ int main()
 		{ 0, 0, 0, 0, 0, 0, 1, 0, 1, 0 },
 	};
 
-	auto CanReach = [&](const Grid &grid)->bool
+	auto CanReach = [&](const Point &grid)->bool
 	{
 		return astar_map[grid.row][grid.col] == 0;
 	};
@@ -27,10 +27,10 @@ int main()
 	AStarDef def;
 	def.row = 1000;
 	def.col = 1000;
-	def.reach = CanReach;
-	def.start = Grid(0, 0);
-	def.end = Grid(999, 999);
-	def.allow_corner = true;
+	def.can_reach = CanReach;
+	def.start_point = Point(0, 0);
+	def.end_point = Point(999, 999);
+	def.allow_corner = false;
 
 	clock_t start, end;
 	start = clock();
@@ -41,6 +41,5 @@ int main()
 	end = clock();
 	cout << "Run time: " << (double)(end - start) / CLOCKS_PER_SEC << "s" << endl;
 
-	system("pause");
 	return 0;
 }

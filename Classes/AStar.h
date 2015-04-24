@@ -17,26 +17,33 @@
 #define IN_CLOSELIST	2
 
 /**
- * 格子位置
+ * 位置
  */
-struct Grid
+struct Point
 {
 	int row;
 	int col;
 
-	Grid() : row(0), col(0) {}
-	Grid(int nRow, int nCol) : row(nRow), col(nCol) {}
+	Point() : row(0), col(0) {}
+	Point(int row, int col) : row(row), col(col) {}
 
-	bool operator== (const Grid &incoming) const
+	bool operator== (const Point &that) const
 	{
-		return row == incoming.row && col == incoming.col;
+		return row == that.row && col == that.col;
+	}
+
+	const Point& operator() (int row, int col)
+	{
+		this->row = row;
+		this->col = col;
+		return *this;
 	}
 };
 
 /**
  * 查询函数
  */
-typedef std::function<bool(const Grid&)> QueryCallBack;
+typedef std::function<bool(const Point&)> QueryCallBack;
 
 /**
  * A*算法参数定义
@@ -46,11 +53,11 @@ struct AStarDef
 	bool			allow_corner;
 	int				row;
 	int				col;
-	Grid			start;
-	Grid			end;
-	QueryCallBack	reach;
+	Point			start_point;
+	Point			end_point;
+	QueryCallBack	can_reach;
 
-	AStarDef() : row(0), col(0), reach(nullptr), allow_corner(false) {}
+	AStarDef() : row(0), col(0), can_reach(nullptr), allow_corner(false) {}
 };
 
 class AStar
@@ -65,15 +72,15 @@ public:
 	{
 		int		g;
 		int		h;
+		Point	pos;
 		Node*	parent;
-		Grid	pos;
 
 		int f() const
 		{
 			return g + h;
 		}
 
-		Node(const Grid &p) : g(0), h(0), pos(p), parent(nullptr) {}
+		Node(const Point &pos) : g(0), h(0), pos(pos), parent(nullptr) {}
 
 		void* operator new(std::size_t size)
 		{
@@ -108,7 +115,7 @@ public:
 	 * @ 参数 def A*算法参数定义
 	 * @ 返回搜索路径
 	 */
-	std::deque<Grid> Search(const AStarDef &def);
+	std::deque<Point> Search(const AStarDef &def);
 
 private:
 	/**
@@ -131,49 +138,49 @@ private:
 private:
 	/**
 	 * 格子是否存在于开启列表
-	 * @ 参数 Grid 格子位置
+	 * @ 参数 Point 位置
 	 * @ 存在返回格子结点的指针，不存在返回nullptr
 	 */
-	Node* IsExistInOpenList(const Grid &grid);
+	Node* IsExistInOpenList(const Point &point);
 
 	/**
 	 * 格子是否存在于关闭列表
-	 * @ 参数 Grid 格子位置
+	 * @ 参数 Point 位置
 	 * @ 存在返回true，不存在返回false
 	 */
-	bool IsExistInCloseList(const Grid &grid);
+	bool IsExistInCloseList(const Point &point);
 
 	/**
 	 * 查询格子是否可通行
-	 * @ 参数 target 目标格
+	 * @ 参数 target_point 目标点
 	 * @ 成功返回true，失败返回false
 	 */
-	bool IsCanReach(const Grid &target);
+	bool IsCanReach(const Point &target_point);
 
 	/**
 	 * 查询格子是否可到达
-	 * @ 参数 current 当前格位置, target 目标格位置, allowCorner 是否允许斜走
+	 * @ 参数 current_point 当前点, target_point 目标点, allow_corner 是否允许斜走
 	 * @ 成功返回true，失败返回false
 	 */
-	bool IsCanReached(const Grid &current, const Grid &target, bool allowCorner);
+	bool IsCanReached(const Point &current_point, const Point &target_point, bool allow_corner);
 
 	/**
 	 * 搜索可通行的格子
-	 * @ 参数 surround 存放搜索结果的数组, current 当前格, allowCorner 是否允许斜走
+	 * @ 参数 current_point 当前点, allow_corner 是否允许斜走, surround_point 存放搜索结果的数组
 	 */
-	void SearchCanReached(std::vector<Grid> &surround, const Grid &current, bool allowCorner);
+	void SearchCanReached(const Point &current_point, bool allow_corner, std::vector<Point> &surround_point);
 
 	/**
 	 * 计算G值
-	 * @ 参数 parent 父节点, current 当前格
+	 * @ 参数 parent 父节点, current_point 当前点
 	 */
-	int CalculG(Node *parent, const Grid &current);
+	int CalculG(Node *parent, const Point &current_point);
 
 	/**
 	 * 计算H值
-	 * @ 参数 current 当前格, end 终点格
+	 * @ 参数 current_point 当前点, end_point 终点
 	 */
-	int CalculH(const Grid &current, const Grid &end);
+	int CalculH(const Point &current_point, const Point &end_point);
 
 	/**
 	 * 获取节点在开启列表中的索引值
@@ -191,12 +198,12 @@ private:
 	/**
 	 * 当节点存在于开启列表中的处理函数
 	 */
-	void FoundNode(Node *current_grid, Node *new_grid);
+	void FoundNode(Node *current_point, Node *new_point);
 
 	/**
 	 * 当节点不存在于开启列表中的处理函数
 	 */
-	void NotFoundNode(Node *current_grid, Node *new_grid, const Grid &end);
+	void NotFoundNode(Node *current_point, Node *new_point, const Point &end);
 
 private:
 	int					num_row_;			// 地图行数

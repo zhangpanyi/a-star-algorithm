@@ -11,11 +11,11 @@ bool CompHeap(const AStar::Node *a, const AStar::Node *b)
 }
 
 AStar::AStar()
-: num_row_(0)
-, num_col_(0)
-, num_map_size_(0)
-, map_index_(nullptr)
-, query_func_(nullptr)
+	: num_row_(0)
+	, num_col_(0)
+	, num_map_size_(0)
+	, map_index_(nullptr)
+	, query_func_(nullptr)
 {
 }
 
@@ -31,7 +31,7 @@ void AStar::Init(const AStarDef &def)
 {
 	num_row_ = def.row;
 	num_col_ = def.col;
-	query_func_ = def.reach;
+	query_func_ = def.can_reach;
 
 	if (map_index_)
 	{
@@ -51,14 +51,17 @@ void AStar::Init(const AStarDef &def)
 
 void AStar::Clear()
 {
-	for (int index = 0; index < num_row_ * num_col_; ++index)
+	int index = 0;
+	const int size = num_row_ * num_col_;
+
+	while (index < size)
 	{
 		if (map_index_[index].ptr)
 		{
 			delete map_index_[index].ptr;
 			map_index_[index].ptr = nullptr;
 		}
-		map_index_[index].state = NOTEXIST;
+		map_index_[index++].state = NOTEXIST;
 	}
 
 	num_row_ = 0;
@@ -67,22 +70,22 @@ void AStar::Clear()
 	query_func_ = nullptr;
 }
 
-inline AStar::Node* AStar::IsExistInOpenList(const Grid &grid)
+inline AStar::Node* AStar::IsExistInOpenList(const Point &point)
 {
-	NodeState &node = map_index_[grid.row * num_row_ + grid.col];
+	NodeState &node = map_index_[point.row * num_row_ + point.col];
 	return node.state == IN_OPENLIST ? node.ptr : nullptr;
 }
 
-inline bool AStar::IsExistInCloseList(const Grid &grid)
+inline bool AStar::IsExistInCloseList(const Point &point)
 {
-	return map_index_[grid.row * num_row_ + grid.col].state == IN_CLOSELIST;
+	return map_index_[point.row * num_row_ + point.col].state == IN_CLOSELIST;
 }
 
-bool AStar::IsCanReach(const Grid &target)
+bool AStar::IsCanReach(const Point &target_point)
 {
-	if (target.col >= 0 && target.col < num_col_ && target.row >= 0 && target.row < num_row_)
+	if (target_point.col >= 0 && target_point.col < num_col_ && target_point.row >= 0 && target_point.row < num_row_)
 	{
-		return query_func_(target);
+		return query_func_(target_point);
 	}
 	else
 	{
@@ -90,65 +93,70 @@ bool AStar::IsCanReach(const Grid &target)
 	}
 }
 
-bool AStar::IsCanReached(const Grid &current, const Grid &target, bool allow_corner)
+bool AStar::IsCanReached(const Point &current_point, const Point &target_point, bool allow_corner)
 {
-	if (!IsCanReach(target) || IsExistInCloseList(target))
+	if (!IsCanReach(target_point) || IsExistInCloseList(target_point))
 	{
 		return false;
 	}
 
-	if (abs(current.col - target.col) + abs(current.row - target.row) == 1)
+	if (abs(current_point.row + current_point.col - target_point.row - target_point.col) == 1)
 	{
 		return true;
 	}
 	else if (allow_corner)
 	{
-		return (IsCanReach(Grid(current.col + target.col - current.col, current.row))
-			&& IsCanReach(Grid(current.col, current.row + target.row - current.row)));
+		return (IsCanReach(Point(current_point.col + target_point.col - current_point.col, current_point.row))
+				&& IsCanReach(Point(current_point.col, current_point.row + target_point.row - current_point.row)));
 	}
 
 	return false;
 }
 
-void AStar::SearchCanReached(std::vector<Grid> &around, const Grid &current, bool allow_corner)
+void AStar::SearchCanReached(const Point &current_point, bool allow_corner, std::vector<Point> &surround_point)
 {
-	Grid target;
-	for (int row = current.row - 1; row <= current.row + 1; ++row)
+	Point target;
+	surround_point.clear();
+
+	for (int row = current_point.row - 1; row <= current_point.row + 1; ++row)
 	{
-		for (int col = current.col - 1; col <= current.col + 1; ++col)
+		for (int col = current_point.col - 1; col <= current_point.col + 1; ++col)
 		{
-			target.col = col;
-			target.row = row;
-			if (IsCanReached(current, target, allow_corner))
+			if (IsCanReached(current_point, target(row, col), allow_corner))
 			{
-				around.push_back(target);
+				surround_point.push_back(target);
 			}
 		}
 	}
 }
 
-inline int AStar::CalculG(Node *parent, const Grid &current)
+inline int AStar::CalculG(Node *parent, const Point &current_point)
 {
-	int value = ((abs(current.col - parent->pos.col) + abs(current.row - parent->pos.row)) == 2 ? kOblique : kStep);
-	value += parent->g;
-	return value;
+	int g_value = ((abs(current_point.row + current_point.col - parent->pos.row - parent->pos.col)) == 2 ? kOblique : kStep);
+	g_value += parent->g;
+	return g_value;
 }
 
-inline int AStar::CalculH(const Grid &current, const Grid &end)
+inline int AStar::CalculH(const Point &current_point, const Point &end_point)
 {
-	int value = abs(end.col - current.col) + abs(end.row - current.row);
-	return value * kStep;
+	int h_value = abs(end_point.row + end_point.col - current_point.row - current_point.col);
+	return h_value * kStep;
 }
 
 int AStar::GetIndex(Node *node)
 {
-	for (unsigned int index = 0; index < open_list_.size(); ++index)
+	unsigned int index = 0;
+	const unsigned int size = open_list_.size();
+
+	while (index < size)
 	{
 		if (open_list_[index]->pos == node->pos)
 		{
 			return index;
 		}
+		++index;
 	}
+
 	return -1;
 }
 
@@ -170,54 +178,54 @@ void AStar::PercolateUp(int hole)
 	}
 }
 
-void AStar::FoundNode(Node *current_grid, Node *new_grid)
+void AStar::FoundNode(Node *current_point, Node *new_point)
 {
-	int new_G_value = CalculG(current_grid, new_grid->pos);
+	int g_value = CalculG(current_point, new_point->pos);
 
-	if (new_G_value < new_grid->g)
+	if (g_value < new_point->g)
 	{
-		new_grid->g = new_G_value;
-		new_grid->parent = current_grid;
-		PercolateUp(GetIndex(new_grid));
+		new_point->g = g_value;
+		new_point->parent = current_point;
+		PercolateUp(GetIndex(new_point));
 	}
 }
 
-void AStar::NotFoundNode(Node *current_grid, Node *new_grid, const Grid &end)
+void AStar::NotFoundNode(Node *current_point, Node *new_point, const Point &end)
 {
-	new_grid->parent = current_grid;
-	new_grid->g = CalculG(current_grid, new_grid->pos);
-	new_grid->h = CalculH(new_grid->pos, end);
+	new_point->parent = current_point;
+	new_point->g = CalculG(current_point, new_point->pos);
+	new_point->h = CalculH(new_point->pos, end);
 
-	NodeState &node = map_index_[new_grid->pos.row * num_row_ + new_grid->pos.col];
-	node.ptr = new_grid;
+	NodeState &node = map_index_[new_point->pos.row * num_row_ + new_point->pos.col];
+	node.ptr = new_point;
 	node.state = IN_OPENLIST;
 
-	open_list_.push_back(new_grid);
+	open_list_.push_back(new_point);
 	std::push_heap(open_list_.begin(), open_list_.end(), CompHeap);
 }
 
 inline bool AStar::ValidAStarDef(const AStarDef &def)
 {
-	return (def.reach
-		&& (def.col >= 0 && def.row >= 0)
-		&& (def.start.col >= 0 && def.start.col < def.col)
-		&& (def.start.row >= 0 && def.start.row < def.row)
-		&& (def.end.col >= 0 && def.end.col < def.col)
-		&& (def.end.row >= 0 && def.end.row < def.row)
-		);
+	return (def.can_reach
+			&& (def.col >= 0 && def.row >= 0)
+			&& (def.start_point.col >= 0 && def.start_point.col < def.col)
+			&& (def.start_point.row >= 0 && def.start_point.row < def.row)
+			&& (def.end_point.col >= 0 && def.end_point.col < def.col)
+			&& (def.end_point.row >= 0 && def.end_point.row < def.row)
+			);
 }
 
-std::deque<Grid> AStar::Search(const AStarDef &def)
+std::deque<Point> AStar::Search(const AStarDef &def)
 {
-	std::deque<Grid> search_path;
+	std::deque<Point> search_path;
 	if (ValidAStarDef(def))
 	{
 		Init(def);
 
-		std::vector<Grid> around;
-		around.reserve(def.allow_corner ? 8 : 4);
+		std::vector<Point> around_point;
+		around_point.reserve(def.allow_corner ? 8 : 4);
 
-		Node *start = new Node(def.start);
+		Node *start = new Node(def.start_point);
 		open_list_.push_back(start);
 
 		NodeState &node = map_index_[start->pos.row * num_row_ + start->pos.col];
@@ -226,40 +234,39 @@ std::deque<Grid> AStar::Search(const AStarDef &def)
 
 		while (!open_list_.empty())
 		{
-			Node *current_grid = open_list_[0];
+			Node *current_point = open_list_[0];
 			std::pop_heap(open_list_.begin(), open_list_.end(), CompHeap);
 			open_list_.pop_back();
-			map_index_[current_grid->pos.row * num_row_ + current_grid->pos.col].state = IN_CLOSELIST;
+			map_index_[current_point->pos.row * num_row_ + current_point->pos.col].state = IN_CLOSELIST;
 
-			around.clear();
-			SearchCanReached(around, current_grid->pos, def.allow_corner);
+			SearchCanReached(current_point->pos, def.allow_corner, around_point);
 
-			unsigned int size = around.size();
+			unsigned int size = around_point.size();
 			for (unsigned int index = 0; index < size; ++index)
 			{
-				Node *new_grid = IsExistInOpenList(around[index]);
-				if (new_grid)
+				Node *new_point = IsExistInOpenList(around_point[index]);
+				if (new_point)
 				{
-					FoundNode(current_grid, new_grid);
+					FoundNode(current_point, new_point);
 				}
 				else
 				{
-					new_grid = new Node(around[index]);
-					NotFoundNode(current_grid, new_grid, def.end);
+					new_point = new Node(around_point[index]);
+					NotFoundNode(current_point, new_point, def.end_point);
 
-					if (around[index] == def.end)
+					if (around_point[index] == def.end_point)
 					{
-						while (new_grid->parent)
+						while (new_point->parent)
 						{
-							search_path.push_front(new_grid->pos);
-							new_grid = new_grid->parent;
+							search_path.push_front(new_point->pos);
+							new_point = new_point->parent;
 						}
-						goto EndSearch;
+						goto end_search;
 					}
 				}
 			}
 		}
-	EndSearch:
+	end_search:
 		Clear();
 	}
 	else
