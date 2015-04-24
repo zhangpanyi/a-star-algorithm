@@ -121,10 +121,10 @@ private:
 	void Init(const AStarDef &def);
 
 	/**
-	 * 检测 A*算法参数定义是否有效
-	 * @ 参数 def A*算法参数定义
+	 * 检测 A*算法参数是否有效
+	 * @ 参数 def A*算法参数
 	 */
-	bool ValidAStarDef(const AStarDef &def);
+	bool ValidParameter(const AStarDef &def);
 
 private:
 	/**
@@ -194,7 +194,7 @@ private:
 	/**
 	 * 当节点不存在于开启列表中的处理函数
 	 */
-	void NotFoundNode(Node *current_point, Node *new_point, const Point &end);
+	void NotFoundNode(Node *current_point, Node *new_point, const Point &end_point);
 
 private:
 	unsigned short		num_row_;			// 地图行数

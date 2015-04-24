@@ -178,11 +178,11 @@ void AStar::FoundNode(Node *current_point, Node *new_point)
 	}
 }
 
-void AStar::NotFoundNode(Node *current_point, Node *new_point, const Point &end)
+void AStar::NotFoundNode(Node *current_point, Node *new_point, const Point &end_point)
 {
 	new_point->parent = current_point;
 	new_point->g = CalculG(current_point, new_point->pos);
-	new_point->h = CalculH(new_point->pos, end);
+	new_point->h = CalculH(new_point->pos, end_point);
 
 	Node *&node_ptr = maps_index_[new_point->pos.row * num_row_ + new_point->pos.col];
 	assert(node_ptr == nullptr);
@@ -193,7 +193,7 @@ void AStar::NotFoundNode(Node *current_point, Node *new_point, const Point &end)
 	std::push_heap(open_list_.begin(), open_list_.end(), CompHeap);
 }
 
-inline bool AStar::ValidAStarDef(const AStarDef &def)
+inline bool AStar::ValidParameter(const AStarDef &def)
 {
 	return (def.can_reach
 			&& (def.col >= 0 && def.row >= 0)
@@ -207,7 +207,7 @@ inline bool AStar::ValidAStarDef(const AStarDef &def)
 std::deque<Point> AStar::Search(const AStarDef &def)
 {
 	std::deque<Point> search_path;
-	if (ValidAStarDef(def))
+	if (ValidParameter(def))
 	{
 		Init(def);
 
@@ -231,7 +231,7 @@ std::deque<Point> AStar::Search(const AStarDef &def)
 
 			SearchCanReached(current_point->pos, def.allow_corner, around_point);
 
-			unsigned int size = around_point.size();
+			const unsigned int size = around_point.size();
 			for (unsigned int index = 0; index < size; ++index)
 			{
 				Node *new_point = IsExistInOpenList(around_point[index]);
