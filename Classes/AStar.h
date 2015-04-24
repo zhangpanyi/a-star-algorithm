@@ -21,18 +21,18 @@
  */
 struct Point
 {
-	int row;
-	int col;
+	unsigned short row;
+	unsigned short col;
 
 	Point() : row(0), col(0) {}
-	Point(int row, int col) : row(row), col(col) {}
+	Point(unsigned short row, unsigned short col) : row(row), col(col) {}
 
 	bool operator== (const Point &that) const
 	{
 		return row == that.row && col == that.col;
 	}
 
-	const Point& operator() (int row, int col)
+	const Point& operator() (unsigned short row, unsigned short col)
 	{
 		this->row = row;
 		this->col = col;
@@ -51,8 +51,8 @@ typedef std::function<bool(const Point&)> QueryCallBack;
 struct AStarDef
 {
 	bool			allow_corner;
-	int				row;
-	int				col;
+	unsigned short	row;
+	unsigned short	col;
 	Point			start_point;
 	Point			end_point;
 	QueryCallBack	can_reach;
@@ -70,17 +70,18 @@ public:
 	 */
 	struct Node
 	{
-		int		g;
-		int		h;
-		Point	pos;
-		Node*	parent;
+		unsigned short	g;
+		unsigned short	h;
+		Point			pos;
+		int				state;
+		Node*			parent;
 
 		int f() const
 		{
 			return g + h;
 		}
 
-		Node(const Point &pos) : g(0), h(0), pos(pos), parent(nullptr) {}
+		Node(const Point &pos) : g(0), h(0), pos(pos), parent(nullptr), state(NOTEXIST) {}
 
 		void* operator new(std::size_t size)
 		{
@@ -92,17 +93,6 @@ public:
 		{
 			if (p) SOA::GetInstance()->Free(p, sizeof(Node));
 		}
-	};
-
-	/**
-	 * 保存节点位于开启列表或者关闭列表的信息
-	 * 以及与之对应的节点指针信息
-	 */
-	struct NodeState
-	{
-		char	state;
-		Node*	ptr;
-		NodeState() : ptr(nullptr), state(NOTEXIST) {};
 	};
 
 public:
@@ -174,13 +164,13 @@ private:
 	 * 计算G值
 	 * @ 参数 parent 父节点, current_point 当前点
 	 */
-	int CalculG(Node *parent, const Point &current_point);
+	unsigned int CalculG(Node *parent, const Point &current_point);
 
 	/**
 	 * 计算H值
 	 * @ 参数 current_point 当前点, end_point 终点
 	 */
-	int CalculH(const Point &current_point, const Point &end_point);
+	unsigned int CalculH(const Point &current_point, const Point &end_point);
 
 	/**
 	 * 获取节点在开启列表中的索引值
@@ -206,10 +196,10 @@ private:
 	void NotFoundNode(Node *current_point, Node *new_point, const Point &end);
 
 private:
-	int					num_row_;			// 地图行数
-	int					num_col_;			// 地图列数
-	int					num_map_size_;		// 节点地图大小
-	NodeState*			map_index_;			// 地图索引
+	unsigned short		num_row_;			// 地图行数
+	unsigned short		num_col_;			// 地图列数
+	unsigned int		num_map_size_;		// 节点地图大小
 	QueryCallBack		query_func_;		// 查询函数
 	std::vector<Node*>	open_list_;			// 开启列表
+	std::vector<Node*>	maps_index_;		// 地图索引
 };

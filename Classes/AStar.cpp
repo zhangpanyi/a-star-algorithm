@@ -14,17 +14,13 @@ AStar::AStar()
 	: num_row_(0)
 	, num_col_(0)
 	, num_map_size_(0)
-	, map_index_(nullptr)
 	, query_func_(nullptr)
 {
 }
 
 AStar::~AStar()
 {
-	if (map_index_)
-	{
-		delete[] map_index_;
-	}
+
 }
 
 void AStar::Init(const AStarDef &def)
@@ -32,53 +28,46 @@ void AStar::Init(const AStarDef &def)
 	num_row_ = def.row;
 	num_col_ = def.col;
 	query_func_ = def.can_reach;
+	num_map_size_ = num_row_ * num_col_;
 
-	if (map_index_)
+	const unsigned int size = maps_index_.size();
+	for (unsigned int index = 0; index < size; ++index)
 	{
-		if (num_map_size_ < num_row_ * num_col_)
-		{
-			delete[] map_index_;
-			num_map_size_ = num_row_ * num_col_;
-			map_index_ = new NodeState[num_map_size_];
-		}
+		maps_index_[index] = nullptr;
 	}
-	else
-	{
-		num_map_size_ = num_row_ * num_col_;
-		map_index_ = new NodeState[num_map_size_];
-	}
+	maps_index_.resize(num_map_size_, nullptr);
 }
 
 void AStar::Clear()
 {
-	int index = 0;
-	const int size = num_row_ * num_col_;
-
-	while (index < size)
+	unsigned int index = 0;
+	while (index < num_map_size_)
 	{
-		if (map_index_[index].ptr)
+		if (maps_index_[index])
 		{
-			delete map_index_[index].ptr;
-			map_index_[index].ptr = nullptr;
+			delete maps_index_[index];
+			maps_index_[index] = nullptr;
 		}
-		map_index_[index++].state = NOTEXIST;
+		++index;
 	}
 
 	num_row_ = 0;
 	num_col_ = 0;
 	open_list_.clear();
+	num_map_size_ = 0;
 	query_func_ = nullptr;
 }
 
 inline AStar::Node* AStar::IsExistInOpenList(const Point &point)
 {
-	NodeState &node = map_index_[point.row * num_row_ + point.col];
-	return node.state == IN_OPENLIST ? node.ptr : nullptr;
+	Node *node_ptr = maps_index_[point.row * num_row_ + point.col];
+	return node_ptr ? (node_ptr->state == IN_OPENLIST ? node_ptr : nullptr) : nullptr;
 }
 
 inline bool AStar::IsExistInCloseList(const Point &point)
 {
-	return map_index_[point.row * num_row_ + point.col].state == IN_CLOSELIST;
+	Node *node_ptr = maps_index_[point.row * num_row_ + point.col];
+	return node_ptr ? node_ptr->state == IN_CLOSELIST : false;
 }
 
 bool AStar::IsCanReach(const Point &target_point)
@@ -130,16 +119,16 @@ void AStar::SearchCanReached(const Point &current_point, bool allow_corner, std:
 	}
 }
 
-inline int AStar::CalculG(Node *parent, const Point &current_point)
+inline unsigned int AStar::CalculG(Node *parent, const Point &current_point)
 {
-	int g_value = ((abs(current_point.row + current_point.col - parent->pos.row - parent->pos.col)) == 2 ? kOblique : kStep);
+	unsigned int g_value = ((abs(current_point.row + current_point.col - parent->pos.row - parent->pos.col)) == 2 ? kOblique : kStep);
 	g_value += parent->g;
 	return g_value;
 }
 
-inline int AStar::CalculH(const Point &current_point, const Point &end_point)
+inline unsigned int AStar::CalculH(const Point &current_point, const Point &end_point)
 {
-	int h_value = abs(end_point.row + end_point.col - current_point.row - current_point.col);
+	unsigned int h_value = abs(end_point.row + end_point.col - current_point.row - current_point.col);
 	return h_value * kStep;
 }
 
@@ -162,7 +151,7 @@ int AStar::GetIndex(Node *node)
 
 void AStar::PercolateUp(int hole)
 {
-	int parent = 0;
+	unsigned int parent = 0;
 	while (hole > 1)
 	{
 		parent = (hole - 1) / 2;
@@ -180,7 +169,7 @@ void AStar::PercolateUp(int hole)
 
 void AStar::FoundNode(Node *current_point, Node *new_point)
 {
-	int g_value = CalculG(current_point, new_point->pos);
+	unsigned int g_value = CalculG(current_point, new_point->pos);
 
 	if (g_value < new_point->g)
 	{
@@ -196,9 +185,10 @@ void AStar::NotFoundNode(Node *current_point, Node *new_point, const Point &end)
 	new_point->g = CalculG(current_point, new_point->pos);
 	new_point->h = CalculH(new_point->pos, end);
 
-	NodeState &node = map_index_[new_point->pos.row * num_row_ + new_point->pos.col];
-	node.ptr = new_point;
-	node.state = IN_OPENLIST;
+	Node *&node_ptr = maps_index_[new_point->pos.row * num_row_ + new_point->pos.col];
+	assert(node_ptr == nullptr);
+	node_ptr = new_point;
+	node_ptr->state = IN_OPENLIST;
 
 	open_list_.push_back(new_point);
 	std::push_heap(open_list_.begin(), open_list_.end(), CompHeap);
@@ -225,19 +215,20 @@ std::deque<Point> AStar::Search(const AStarDef &def)
 		std::vector<Point> around_point;
 		around_point.reserve(def.allow_corner ? 8 : 4);
 
-		Node *start = new Node(def.start_point);
-		open_list_.push_back(start);
+		Node *start_node = new Node(def.start_point);
+		open_list_.push_back(start_node);
 
-		NodeState &node = map_index_[start->pos.row * num_row_ + start->pos.col];
-		node.ptr = start;
-		node.state = IN_OPENLIST;
+		Node *&node_ptr = maps_index_[start_node->pos.row * num_row_ + start_node->pos.col];
+		assert(node_ptr == nullptr);
+		node_ptr = start_node;
+		node_ptr->state = IN_OPENLIST;
 
 		while (!open_list_.empty())
 		{
 			Node *current_point = open_list_[0];
 			std::pop_heap(open_list_.begin(), open_list_.end(), CompHeap);
 			open_list_.pop_back();
-			map_index_[current_point->pos.row * num_row_ + current_point->pos.col].state = IN_CLOSELIST;
+			maps_index_[current_point->pos.row * num_row_ + current_point->pos.col]->state = IN_CLOSELIST;
 
 			SearchCanReached(current_point->pos, def.allow_corner, around_point);
 
