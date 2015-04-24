@@ -30,10 +30,9 @@ void AStar::Init(const AStarDef &def)
 	query_func_ = def.can_reach;
 	num_map_size_ = num_row_ * num_col_;
 
-	const unsigned int size = maps_index_.size();
-	for (unsigned int index = 0; index < size; ++index)
+	if (!maps_index_.empty())
 	{
-		maps_index_[index] = nullptr;
+		memset(&maps_index_[0], 0, sizeof(maps_index_[0]) * maps_index_.size());
 	}
 	maps_index_.resize(num_map_size_, nullptr);
 }
