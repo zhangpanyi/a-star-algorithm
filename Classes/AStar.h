@@ -10,6 +10,7 @@
 #include <deque>
 #include <vector>
 #include <functional>
+#include "NonCopyable.h"
 #include "BlockAllocator.h"
 
 #define NOTEXIST		0
@@ -60,7 +61,7 @@ struct AStarDef
 	AStarDef() : row(0), col(0), can_reach(nullptr), allow_corner(false) {}
 };
 
-class AStar
+class AStar : public NonCopyable
 {
 public:
 	/**
