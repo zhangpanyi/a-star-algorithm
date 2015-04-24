@@ -32,7 +32,7 @@ void AStar::Init(const AStarDef &def)
 
 	if (!maps_index_.empty())
 	{
-		memset(&maps_index_[0], 0, sizeof(maps_index_[0]) * maps_index_.size());
+		memset(&maps_index_[0], 0, sizeof(std::vector<Node *>::value_type) * maps_index_.size());
 	}
 	maps_index_.resize(num_map_size_, nullptr);
 }
@@ -256,6 +256,7 @@ std::deque<Point> AStar::Search(const AStarDef &def)
 				}
 			}
 		}
+
 	end_search:
 		Clear();
 	}
