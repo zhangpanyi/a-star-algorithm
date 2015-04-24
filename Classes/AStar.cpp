@@ -161,7 +161,7 @@ void AStar::PercolateUp(int hole)
 		}
 		else
 		{
-			break;
+			return;
 		}
 	}
 }
