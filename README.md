@@ -29,13 +29,13 @@ vs2013
 <tr>
 <td>1000*1000</td>
 <td>否</td>
-<td>0.137s</td>
+<td>0.091s</td>
 </tr>
 
 <tr>
 <td>1000*1000</td>
 <td>是</td>
-<td>0.006s</td>
+<td>0.004s</td>
 </tr>
 
 </table>
