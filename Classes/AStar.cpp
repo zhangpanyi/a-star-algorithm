@@ -121,8 +121,7 @@ void AStar::SearchCanReached(const Point &current_point, bool allow_corner, std:
 inline unsigned int AStar::CalculG(Node *parent, const Point &current_point)
 {
 	unsigned int g_value = ((abs(current_point.row + current_point.col - parent->pos.row - parent->pos.col)) == 2 ? kOblique : kStep);
-	g_value += parent->g;
-	return g_value;
+	return g_value += parent->g;
 }
 
 inline unsigned int AStar::CalculH(const Point &current_point, const Point &end_point)
@@ -224,15 +223,17 @@ std::deque<Point> AStar::Search(const AStarDef &def)
 
 		while (!open_list_.empty())
 		{
-			Node *current_point = open_list_[0];
+			Node *current_point = *open_list_.begin();
 			std::pop_heap(open_list_.begin(), open_list_.end(), CompHeap);
 			open_list_.pop_back();
 			maps_index_[current_point->pos.row * num_row_ + current_point->pos.col]->state = IN_CLOSELIST;
 
 			SearchCanReached(current_point->pos, def.allow_corner, around_point);
 
+			unsigned int index = 0;
 			const unsigned int size = around_point.size();
-			for (unsigned int index = 0; index < size; ++index)
+
+			while (index < size)
 			{
 				Node *new_point = IsExistInOpenList(around_point[index]);
 				if (new_point)
@@ -254,6 +255,7 @@ std::deque<Point> AStar::Search(const AStarDef &def)
 						goto end_search;
 					}
 				}
+				++index;
 			}
 		}
 
@@ -263,7 +265,7 @@ std::deque<Point> AStar::Search(const AStarDef &def)
 	else
 	{
 		Clear();
-		assert("Invalid AStarDef!");
+		assert("invalid parameter!");
 	}
 
 	return search_path;
