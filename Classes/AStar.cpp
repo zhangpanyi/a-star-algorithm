@@ -52,8 +52,8 @@ void AStar::Clear()
 
 	num_row_ = 0;
 	num_col_ = 0;
-	open_list_.clear();
 	num_map_size_ = 0;
+	open_list_.resize(0);
 	query_func_ = nullptr;
 }
 

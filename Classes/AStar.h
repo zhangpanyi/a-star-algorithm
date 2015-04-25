@@ -65,7 +65,6 @@ class AStar : public NonCopyable
 {
 public:
 	/**
-	 * 格子结点
 	 * 记录g值、h值、和父节点信息
 	 * 使用小对象分配器分配内存
 	 */
