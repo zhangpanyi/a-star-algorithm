@@ -1,7 +1,8 @@
 ﻿#include <time.h>
 #include "AStar.h"
+#include <fstream>
+#include <sstream>
 #include <iostream>
-using namespace std;
 
 int main()
 {
@@ -37,7 +38,24 @@ int main()
 	auto path = astar.Search(def);
 	
 	end = clock();
-	cout << "Run time: " << (double)(end - start) / CLOCKS_PER_SEC << "s" << endl;
+	std::cout << "Run time: " << (double)(end - start) / CLOCKS_PER_SEC << "s" << std::endl;
+	std::cout << (path.empty() ? "路径未找到！" : "路径已找到！") << std::endl;
+
+	if (!path.empty())
+	{
+
+		std::ofstream file;
+		std::stringstream ss;
+		file.open("search_path.txt");
+		for (auto &value : path)
+		{
+			ss.str("");
+			ss << "row:" << value.row << ',' << "col:" << value.col << "\n";
+			file.write(ss.str().c_str(), ss.str().length());
+		}
+		file.close();
+		std::cout << "路径已成功保存到search_path.txt文件!" << std::endl;
+	}
 
 	system("pause");
 	return 0;
