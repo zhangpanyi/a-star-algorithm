@@ -5,7 +5,7 @@
 const int kStep = 10;
 const int kOblique = 14;
 
-bool CompHeap(const AStar::Node *a, const AStar::Node *b)
+inline bool CompHeap(const AStar::Node *a, const AStar::Node *b)
 {
 	return a->f() > b->f();
 }
