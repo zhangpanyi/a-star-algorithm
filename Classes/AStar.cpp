@@ -74,9 +74,21 @@ bool AStar::IsCanReach(const Point &target_point)
 	return (target_point.col >= 0 && target_point.col < num_col_ && target_point.row >= 0 && target_point.row < num_row_) ? query_func_(target_point) : false;
 }
 
+bool AStar::IsCanReachAndInOpen(const Point &target_point)
+{
+	if (target_point.col >= 0 && target_point.col < num_col_ && target_point.row >= 0 && target_point.row < num_row_)
+	{
+		return IsExistInCloseList(target_point) ? false : query_func_(target_point);
+	}
+	else
+	{
+		return false;
+	}
+}
+
 bool AStar::IsCanReached(const Point &current_point, const Point &target_point, bool allow_corner)
 {
-	if (!IsCanReach(target_point) || IsExistInCloseList(target_point))
+	if (!IsCanReachAndInOpen(target_point))
 	{
 		return false;
 	}

@@ -147,6 +147,7 @@ private:
 	 * @ 成功返回true，失败返回false
 	 */
 	bool IsCanReach(const Point &target_point);
+	bool IsCanReachAndInOpen(const Point &target_point);
 
 	/**
 	 * 查询格子是否可到达
