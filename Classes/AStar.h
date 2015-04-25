@@ -11,11 +11,6 @@
 #include <vector>
 #include <functional>
 #include "NonCopyable.h"
-#include "BlockAllocator.h"
-
-#define NOTEXIST		0
-#define IN_OPENLIST		1
-#define IN_CLOSELIST	2
 
 /**
  * 位置
@@ -61,40 +56,10 @@ struct AStarDef
 	AStarDef() : row(0), col(0), can_reach(nullptr), allow_corner(false) {}
 };
 
+struct Node;
+
 class AStar : public NonCopyable
 {
-public:
-	/**
-	 * 记录g值、h值、和父节点信息
-	 * 使用小对象分配器分配内存
-	 */
-	struct Node
-	{
-		unsigned short	g;
-		unsigned short	h;
-		Point			pos;
-		int				state;
-		Node*			parent;
-
-		int f() const
-		{
-			return g + h;
-		}
-
-		Node(const Point &pos) : g(0), h(0), pos(pos), parent(nullptr), state(NOTEXIST) {}
-
-		void* operator new(std::size_t size)
-		{
-			void *ptr = SOA::GetInstance()->Allocate(size);
-			return ptr;
-		}
-
-		void operator delete(void* p) throw()
-		{
-			if (p) SOA::GetInstance()->Free(p, sizeof(Node));
-		}
-	};
-
 public:
 	AStar();
 	~AStar();

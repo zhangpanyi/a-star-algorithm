@@ -1,11 +1,42 @@
-﻿#include <assert.h>
+﻿#include "AStar.h"
+#include <assert.h>
 #include <algorithm>
-#include "AStar.h"
+#include "BlockAllocator.h"
+
+enum
+{
+	NOTEXIST,
+	IN_OPENLIST,
+	IN_CLOSELIST
+};
 
 const int kStep = 10;
 const int kOblique = 14;
 
-inline bool CompHeap(const AStar::Node *a, const AStar::Node *b)
+struct Node
+{
+	unsigned short	g;
+	unsigned short	h;
+	Point			pos;
+	int				state;
+	Node*			parent;
+
+	int f() const { return g + h; }
+
+	inline Node(const Point &pos) : g(0), h(0), pos(pos), parent(nullptr), state(NOTEXIST) {}
+
+	void* operator new(std::size_t size)
+	{
+		return SOA::GetInstance()->Allocate(size);
+	}
+
+	void operator delete(void* p) throw()
+	{
+		if (p) SOA::GetInstance()->Free(p, sizeof(Node));
+	}
+};
+
+inline bool CompHeap(const Node *a, const Node *b)
 {
 	return a->f() > b->f();
 }
@@ -57,7 +88,7 @@ void AStar::Clear()
 	query_func_ = nullptr;
 }
 
-inline AStar::Node* AStar::IsExistInOpenList(const Point &point)
+inline Node* AStar::IsExistInOpenList(const Point &point)
 {
 	Node *node_ptr = maps_index_[point.row * num_row_ + point.col];
 	return node_ptr ? (node_ptr->state == IN_OPENLIST ? node_ptr : nullptr) : nullptr;
