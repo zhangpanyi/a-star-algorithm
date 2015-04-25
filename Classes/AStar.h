@@ -104,7 +104,7 @@ public:
 	/**
 	 * 执行A*搜索
 	 * @ 参数 def A*算法参数定义
-	 * @ 返回搜索路径
+	 * @ 返回 std::deque<Point> 搜索路径
 	 */
 	std::deque<Point> Search(const AStarDef &def);
 
