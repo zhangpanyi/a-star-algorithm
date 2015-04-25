@@ -142,15 +142,22 @@ void AStar::SearchCanReached(const Point &current_point, bool allow_corner, std:
 	Point target;
 	surround_point.clear();
 
-	for (int row = current_point.row - 1; row <= current_point.row + 1; ++row)
+	int row_index = current_point.row - 1;
+	const int max_row = current_point.row + 1;
+	const int max_col = current_point.col + 1;
+
+	while (row_index <= max_row)
 	{
-		for (int col = current_point.col - 1; col <= current_point.col + 1; ++col)
+		int col_index = current_point.col - 1;
+		while (col_index <= max_col)
 		{
-			if (IsCanReached(current_point, target(row, col), allow_corner))
+			if (IsCanReached(current_point, target(row_index, col_index), allow_corner))
 			{
 				surround_point.push_back(target);
 			}
+			++col_index;
 		}
+		++row_index;
 	}
 }
 
