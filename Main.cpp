@@ -50,7 +50,7 @@ int main()
 		for (auto &value : path)
 		{
 			ss.str("");
-			ss << "row:" << value.row << ',' << "col:" << value.col << "\n";
+			ss << "row:" << value.row << ", " << "col:" << value.col << "\n";
 			file.write(ss.str().c_str(), ss.str().length());
 		}
 		file.close();
