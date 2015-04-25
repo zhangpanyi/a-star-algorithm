@@ -71,14 +71,7 @@ inline bool AStar::IsExistInCloseList(const Point &point)
 
 bool AStar::IsCanReach(const Point &target_point)
 {
-	if (target_point.col >= 0 && target_point.col < num_col_ && target_point.row >= 0 && target_point.row < num_row_)
-	{
-		return query_func_(target_point);
-	}
-	else
-	{
-		return false;
-	}
+	return (target_point.col >= 0 && target_point.col < num_col_ && target_point.row >= 0 && target_point.row < num_row_) ? query_func_(target_point) : false;
 }
 
 bool AStar::IsCanReached(const Point &current_point, const Point &target_point, bool allow_corner)
