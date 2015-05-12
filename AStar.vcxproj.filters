@@ -8,31 +8,37 @@
     <Filter Include="Classes">
       <UniqueIdentifier>{cb55168c-26d7-43e3-a807-7c5d7ad29c6a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Astar">
+      <UniqueIdentifier>{bedaea98-c5b0-491d-ba4f-ac6c4ae69f7b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Classes\AStar.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\BlockAllocator.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Singleton.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Classes\AStar\AStar.cpp">
+      <Filter>Classes\Astar</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\AStar\BlockAllocator.cpp">
+      <Filter>Classes\Astar</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\AStar\Singleton.cpp">
+      <Filter>Classes\Astar</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AStar.h">
       <Filter>Classes</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\BlockAllocator.h">
-      <Filter>Classes</Filter>
+    <ClInclude Include="Classes\AStar\BlockAllocator.h">
+      <Filter>Classes\Astar</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Singleton.h">
-      <Filter>Classes</Filter>
+    <ClInclude Include="Classes\AStar\NonCopyable.h">
+      <Filter>Classes\Astar</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\NonCopyable.h">
-      <Filter>Classes</Filter>
+    <ClInclude Include="Classes\AStar\Singleton.h">
+      <Filter>Classes\Astar</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\AStar\Types.h">
+      <Filter>Classes\Astar</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
