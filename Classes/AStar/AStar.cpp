@@ -1,5 +1,4 @@
 ﻿#include "AStar.h"
-#include <assert.h>
 #include <algorithm>
 #include "AStar/BlockAllocator.h"
 
@@ -180,7 +179,7 @@ namespace pathfinding
 		return h_value * kStep;
 	}
 
-	int AStar::GetIndex(Node *node)
+	int AStar::GetIndexInOpenList(Node *node)
 	{
 		unsigned int index = 0;
 		const unsigned int size = open_list_.size();
@@ -193,7 +192,7 @@ namespace pathfinding
 			}
 			++index;
 		}
-
+		std::abort();
 		return -1;
 	}
 
@@ -223,7 +222,7 @@ namespace pathfinding
 		{
 			new_point->g = g_value;
 			new_point->parent = current_point;
-			PercolateUp(GetIndex(new_point));
+			PercolateUp(GetIndexInOpenList(new_point));
 		}
 	}
 
@@ -234,7 +233,6 @@ namespace pathfinding
 		new_point->h = CalculH(new_point->pos, end_point);
 
 		Node *&node_ptr = maps_index_[new_point->pos.row * total_row_ + new_point->pos.col];
-		assert(node_ptr == nullptr);
 		node_ptr = new_point;
 		node_ptr->state = IN_OPENLIST;
 
@@ -253,9 +251,9 @@ namespace pathfinding
 				);
 	}
 
-	std::deque<Point> AStar::Search(const SearchParam &param)
+	std::vector<Point> AStar::Search(const SearchParam &param)
 	{
-		std::deque<Point> search_path;
+		std::vector<Point> search_path;
 		if (!InvalidParam(param))
 		{
 			Init(param);
@@ -267,7 +265,6 @@ namespace pathfinding
 			open_list_.push_back(start_node);
 
 			Node *&node_ptr = maps_index_[start_node->pos.row * total_row_ + start_node->pos.col];
-			assert(node_ptr == nullptr);
 			node_ptr = start_node;
 			node_ptr->state = IN_OPENLIST;
 
@@ -299,16 +296,16 @@ namespace pathfinding
 						{
 							while (new_point->parent)
 							{
-								search_path.push_front(new_point->pos);
+								search_path.push_back(new_point->pos);
 								new_point = new_point->parent;
 							}
+							std::reverse(search_path.begin(), search_path.end());
 							goto __end__;
 						}
 					}
 					++index;
 				}
 			}
-
 		__end__:
 			Clear();
 		}

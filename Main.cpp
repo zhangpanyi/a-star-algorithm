@@ -38,10 +38,9 @@ int main()
 
 	auto end_time = std::chrono::system_clock::now();
 	auto duration = end_time - start_time;
-
 	std::cout << (path.empty() ? "路径未找到！" : "路径已找到！") << std::endl;
-	std::cout << "本次寻路耗时" << duration.count() << "微秒" << std::endl;
-	
+	std::cout << "本次寻路耗时" << std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count() << "纳秒" << std::endl;
+
 	if (!path.empty())
 	{
 		std::ofstream file;

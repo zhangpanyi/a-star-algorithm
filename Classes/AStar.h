@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include <deque>
 #include <vector>
 #include "AStar/Types.h"
 #include "AStar/NonCopyable.h"
@@ -19,9 +18,9 @@ namespace pathfinding
 		/**
 		 * 执行A*搜索
 		 * @param param 搜索参数
-		 * @return std::deque<Point> 搜索路径
+		 * @return std::vector<Point> 搜索路径
 		 */
-		std::deque<Point> Search(const SearchParam &param);
+		std::vector<Point> Search(const SearchParam &param);
 
 	private:
 		/**
@@ -97,9 +96,9 @@ namespace pathfinding
 
 		/**
 		 * 获取节点在开启列表中的索引值
-		 * @return 失败返回-1
+		 * @param node 节点指针
 		 */
-		int GetIndex(Node *node);
+		int GetIndexInOpenList(Node *node);
 
 		/**
 		 * 开启列表上滤(二叉堆上滤)
