@@ -2,7 +2,7 @@
 
 #include <functional>
 
-namespace pathfinding
+namespace pf
 {
 	/**
 	 * 位置

@@ -2,7 +2,7 @@
 #include <algorithm>
 #include "AStar/BlockAllocator.h"
 
-namespace pathfinding
+namespace pf
 {
 	/**
 	 * 节点状态枚举

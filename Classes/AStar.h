@@ -4,7 +4,7 @@
 #include "AStar/Types.h"
 #include "AStar/NonCopyable.h"
 
-namespace pathfinding
+namespace pf
 {
 	struct Node;
 
