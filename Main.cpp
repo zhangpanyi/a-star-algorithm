@@ -36,7 +36,7 @@ int main()
 	pathfinding::AStar astar;
 	auto path = astar.Search(param);
 	std::cout << (path.empty() ? "路径未找到！" : "路径已找到！") << std::endl;
-	std::cout << "本次寻路耗时" << duration.nanoseconds() << "纳秒" << std::endl;
+	std::cout << "本次寻路耗时" << duration.NanoSeconds() << "纳秒" << std::endl;
 
 	if (!path.empty())
 	{
