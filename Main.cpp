@@ -1,8 +1,9 @@
-﻿#include <chrono>
-#include <fstream>
+﻿#include <fstream>
 #include <sstream>
 #include <iostream>
+
 #include "AStar.h"
+#include "AStar/Duration.h"
 
 int main()
 {
@@ -31,15 +32,11 @@ int main()
 	param.end_point = pathfinding::Point(999, 999);
 	param.allow_corner = false;
 
-	auto start_time = std::chrono::system_clock::now();
-
+	Duration duration;
 	pathfinding::AStar astar;
 	auto path = astar.Search(param);
-
-	auto end_time = std::chrono::system_clock::now();
-	auto duration = end_time - start_time;
 	std::cout << (path.empty() ? "路径未找到！" : "路径已找到！") << std::endl;
-	std::cout << "本次寻路耗时" << std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count() << "纳秒" << std::endl;
+	std::cout << "本次寻路耗时" << duration.nanoseconds() << "纳秒" << std::endl;
 
 	if (!path.empty())
 	{

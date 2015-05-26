@@ -87,6 +87,7 @@
   <ItemGroup>
     <ClInclude Include="Classes\AStar.h" />
     <ClInclude Include="Classes\AStar\BlockAllocator.h" />
+    <ClInclude Include="Classes\AStar\Duration.h" />
     <ClInclude Include="Classes\AStar\NonCopyable.h" />
     <ClInclude Include="Classes\AStar\Singleton.h" />
     <ClInclude Include="Classes\AStar\Types.h" />

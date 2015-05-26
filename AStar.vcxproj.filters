@@ -40,5 +40,8 @@
     <ClInclude Include="Classes\AStar\Types.h">
       <Filter>Classes\Astar</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\AStar\Duration.h">
+      <Filter>Classes\Astar</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
