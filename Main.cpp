@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "AStar.h"
-#include "AStar/Duration.h"
+#include "Misc/Duration.h"
 
 int main()
 {

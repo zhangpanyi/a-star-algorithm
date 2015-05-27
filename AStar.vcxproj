@@ -80,17 +80,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Classes\AStar\AStar.cpp" />
-    <ClCompile Include="Classes\AStar\BlockAllocator.cpp" />
-    <ClCompile Include="Classes\AStar\Singleton.cpp" />
+    <ClCompile Include="Classes\Misc\BlockAllocator.cpp" />
+    <ClCompile Include="Classes\Misc\Singleton.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AStar.h" />
-    <ClInclude Include="Classes\AStar\BlockAllocator.h" />
-    <ClInclude Include="Classes\AStar\Duration.h" />
-    <ClInclude Include="Classes\AStar\NonCopyable.h" />
-    <ClInclude Include="Classes\AStar\Singleton.h" />
     <ClInclude Include="Classes\AStar\Types.h" />
+    <ClInclude Include="Classes\Misc\BlockAllocator.h" />
+    <ClInclude Include="Classes\Misc\Duration.h" />
+    <ClInclude Include="Classes\Misc\NonCopyable.h" />
+    <ClInclude Include="Classes\Misc\Singleton.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -2,7 +2,7 @@
 
 #include <vector>
 #include "AStar/Types.h"
-#include "AStar/NonCopyable.h"
+#include "Misc/NonCopyable.h"
 
 namespace pf
 {

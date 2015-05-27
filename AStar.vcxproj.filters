@@ -11,16 +11,19 @@
     <Filter Include="Classes\Astar">
       <UniqueIdentifier>{bedaea98-c5b0-491d-ba4f-ac6c4ae69f7b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Misc">
+      <UniqueIdentifier>{7bbaf743-d1df-430c-9396-af3c7d4a61b1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Classes\Misc\BlockAllocator.cpp">
+      <Filter>Classes\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Misc\Singleton.cpp">
+      <Filter>Classes\Misc</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\AStar\AStar.cpp">
-      <Filter>Classes\Astar</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\AStar\BlockAllocator.cpp">
-      <Filter>Classes\Astar</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\AStar\Singleton.cpp">
       <Filter>Classes\Astar</Filter>
     </ClCompile>
   </ItemGroup>
@@ -28,19 +31,19 @@
     <ClInclude Include="Classes\AStar.h">
       <Filter>Classes</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\AStar\BlockAllocator.h">
-      <Filter>Classes\Astar</Filter>
+    <ClInclude Include="Classes\Misc\BlockAllocator.h">
+      <Filter>Classes\Misc</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\AStar\NonCopyable.h">
-      <Filter>Classes\Astar</Filter>
+    <ClInclude Include="Classes\Misc\Duration.h">
+      <Filter>Classes\Misc</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\AStar\Singleton.h">
-      <Filter>Classes\Astar</Filter>
+    <ClInclude Include="Classes\Misc\NonCopyable.h">
+      <Filter>Classes\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Misc\Singleton.h">
+      <Filter>Classes\Misc</Filter>
     </ClInclude>
     <ClInclude Include="Classes\AStar\Types.h">
-      <Filter>Classes\Astar</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\AStar\Duration.h">
       <Filter>Classes\Astar</Filter>
     </ClInclude>
   </ItemGroup>

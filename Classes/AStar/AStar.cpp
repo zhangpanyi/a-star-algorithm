@@ -1,6 +1,6 @@
 ﻿#include "AStar.h"
 #include <algorithm>
-#include "AStar/BlockAllocator.h"
+#include "../Misc/BlockAllocator.h"
 
 namespace pf
 {
