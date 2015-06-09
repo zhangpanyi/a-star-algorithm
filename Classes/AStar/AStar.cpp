@@ -47,6 +47,7 @@ namespace pf
 		}
 	};
 
+	// 堆比较函数
 	inline bool CompHeap(const Node *a, const Node *b)
 	{
 		return a->f() > b->f();
@@ -65,6 +66,7 @@ namespace pf
 
 	}
 
+	// 初始化
 	void AStar::Init(const SearchParam &param)
 	{
 		total_row_ = param.total_row;
@@ -74,11 +76,12 @@ namespace pf
 
 		if (!maps_index_.empty())
 		{
-			memset(&maps_index_[0], 0, sizeof(decltype(maps_index_)::value_type) * maps_index_.size());
+			memset(&maps_index_[0], 0, sizeof(Node *) * maps_index_.size());
 		}
 		maps_index_.resize(map_size_, nullptr);
 	}
 
+	// 清理
 	void AStar::Clear()
 	{
 		unsigned int index = 0;
@@ -94,28 +97,44 @@ namespace pf
 		query_func_ = nullptr;
 	}
 
-	inline Node* AStar::ExistInOpenList(const Point &point)
+	// 是否是有效参数
+	bool AStar::InvalidParam(const SearchParam &param)
+	{
+		return (!param.can_reach
+				|| (param.total_col < 0 || param.total_row < 0)
+				|| (param.start_point.col < 0 || param.start_point.col >= param.total_col)
+				|| (param.start_point.row < 0 || param.start_point.row >= param.total_row)
+				|| (param.end_point.col < 0 || param.end_point.col >= param.total_col)
+				|| (param.end_point.row < 0 || param.end_point.row >= param.total_row)
+				);
+	}
+
+	// 点是否存在于开启列表
+	inline Node* AStar::IsExistInOpenList(const Point &point)
 	{
 		Node *node_ptr = maps_index_[point.row * total_row_ + point.col];
 		return node_ptr ? (node_ptr->state == IN_OPENLIST ? node_ptr : nullptr) : nullptr;
 	}
 
-	inline bool AStar::ExistInCloseList(const Point &point)
+	// 点是否存在于关闭列表
+	inline bool AStar::IsExistInCloseList(const Point &point)
 	{
 		Node *node_ptr = maps_index_[point.row * total_row_ + point.col];
 		return node_ptr ? node_ptr->state == IN_CLOSELIST : false;
 	}
 
+	// 点是否可通行
 	bool AStar::IsCanReach(const Point &target_point)
 	{
 		return (target_point.col >= 0 && target_point.col < total_col_ && target_point.row >= 0 && target_point.row < total_row_) ? query_func_(target_point) : false;
 	}
 
-	bool AStar::IsCanReachAndInOpen(const Point &target_point)
+	// 点是否可通行并且在开启列表中
+	bool AStar::IsCanReachAndExistInOpenList(const Point &target_point)
 	{
 		if (target_point.col >= 0 && target_point.col < total_col_ && target_point.row >= 0 && target_point.row < total_row_)
 		{
-			return ExistInCloseList(target_point) ? false : query_func_(target_point);
+			return IsExistInCloseList(target_point) ? false : query_func_(target_point);
 		}
 		else
 		{
@@ -123,9 +142,10 @@ namespace pf
 		}
 	}
 
+	// 查询目标点是否可到达
 	bool AStar::IsCanReached(const Point &current_point, const Point &target_point, bool allow_corner)
 	{
-		if (!IsCanReachAndInOpen(target_point))
+		if (!IsCanReachAndExistInOpenList(target_point))
 		{
 			return false;
 		}
@@ -143,6 +163,7 @@ namespace pf
 		return false;
 	}
 
+	// 搜索周围可以到达的点
 	void AStar::SearchCanReached(const Point &current_point, bool allow_corner, std::vector<Point> &surround_point)
 	{
 		Point target;
@@ -167,19 +188,22 @@ namespace pf
 		}
 	}
 
+	// 计算G值
 	inline unsigned int AStar::CalculG(Node *parent, const Point &current_point)
 	{
 		unsigned int g_value = ((abs(current_point.row + current_point.col - parent->pos.row - parent->pos.col)) == 2 ? kOblique : kStep);
 		return g_value += parent->g;
 	}
 
+	// 计算H值
 	inline unsigned int AStar::CalculH(const Point &current_point, const Point &end_point)
 	{
 		unsigned int h_value = abs(end_point.row + end_point.col - current_point.row - current_point.col);
 		return h_value * kStep;
 	}
 
-	int AStar::GetIndexInOpenList(Node *node)
+	// 获取节点在开启列表中的索引
+	int AStar::GetNodeIndex(Node *node)
 	{
 		unsigned int index = 0;
 		const unsigned int size = open_list_.size();
@@ -196,6 +220,7 @@ namespace pf
 		return -1;
 	}
 
+	// 开启列表上滤
 	void AStar::PercolateUp(int hole)
 	{
 		unsigned int parent = 0;
@@ -214,6 +239,7 @@ namespace pf
 		}
 	}
 
+	// 当节点存在于开启列表中的处理函数
 	void AStar::HandleFoundNode(Node *current_point, Node *new_point)
 	{
 		unsigned int g_value = CalculG(current_point, new_point->pos);
@@ -222,10 +248,11 @@ namespace pf
 		{
 			new_point->g = g_value;
 			new_point->parent = current_point;
-			PercolateUp(GetIndexInOpenList(new_point));
+			PercolateUp(GetNodeIndex(new_point));
 		}
 	}
 
+	// 当节点不存在于开启列表中的处理函数
 	void AStar::HandleNotFoundNode(Node *current_point, Node *new_point, const Point &end_point)
 	{
 		new_point->parent = current_point;
@@ -240,17 +267,7 @@ namespace pf
 		std::push_heap(open_list_.begin(), open_list_.end(), CompHeap);
 	}
 
-	bool AStar::InvalidParam(const SearchParam &param)
-	{
-		return (!param.can_reach
-				|| (param.total_col < 0 || param.total_row < 0)
-				|| (param.start_point.col < 0 || param.start_point.col >= param.total_col)
-				|| (param.start_point.row < 0 || param.start_point.row >= param.total_row)
-				|| (param.end_point.col < 0 || param.end_point.col >= param.total_col)
-				|| (param.end_point.row < 0 || param.end_point.row >= param.total_row)
-				);
-	}
-
+	// 搜索路径
 	std::vector<Point> AStar::Search(const SearchParam &param)
 	{
 		std::vector<Point> search_path;
@@ -282,7 +299,7 @@ namespace pf
 
 				while (index < size)
 				{
-					Node *new_point = ExistInOpenList(around_point[index]);
+					Node *new_point = IsExistInOpenList(around_point[index]);
 					if (new_point)
 					{
 						HandleFoundNode(current_point, new_point);

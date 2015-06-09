@@ -46,14 +46,14 @@ namespace pf
 		 * @param point 当前点
 		 * @return 存在返回格子结点的指针，不存在返回nullptr
 		 */
-		Node* ExistInOpenList(const Point &point);
+		Node* IsExistInOpenList(const Point &point);
 
 		/**
 		 * 点是否存在于关闭列表
 		 * @param point 当前点
 		 * @return 存在返回true，不存在返回false
 		 */
-		bool ExistInCloseList(const Point &point);
+		bool IsExistInCloseList(const Point &point);
 
 		/**
 		 * 查询点是否可通行
@@ -61,7 +61,7 @@ namespace pf
 		 * @return 成功返回true，失败返回false
 		 */
 		bool IsCanReach(const Point &target_point);
-		bool IsCanReachAndInOpen(const Point &target_point);
+		bool IsCanReachAndExistInOpenList(const Point &target_point);
 
 		/**
 		 * 查询点是否可到达
@@ -98,10 +98,10 @@ namespace pf
 		 * 获取节点在开启列表中的索引值
 		 * @param node 节点指针
 		 */
-		int GetIndexInOpenList(Node *node);
+		int GetNodeIndex(Node *node);
 
 		/**
-		 * 开启列表上滤(二叉堆上滤)
+		 * 开启列表上滤
 		 * @param hole 上滤位置
 		 */
 		void PercolateUp(int hole);
