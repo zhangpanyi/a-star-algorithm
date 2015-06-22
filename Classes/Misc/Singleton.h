@@ -1,43 +1,42 @@
 ﻿#pragma once
 
-#include <list>
+#include <set>
 
 class SingletonBase
 {
-	class InstanceTable : public std::list < SingletonBase * >
+	class InstanceTable : public std::set < SingletonBase * >
 	{
 	public:
 		InstanceTable()
-			: cleared_(false)
+			: is_cleared_(false)
 		{
 
 		};
 
 		~InstanceTable()
 		{
-			cleared_ = true;
-			while (!empty())
+			is_cleared_ = true;
+			for (auto instance_ptr : *this)
 			{
-				delete back();
-				pop_back();
+				delete instance_ptr;
 			}
 		}
 
 	public:
-		bool cleared_;
+		bool is_cleared_;
 	};
 
 protected:
 	SingletonBase()
 	{
-		s_instance_table_.push_back(this);
+		s_instance_table_.insert(this);
 	}
 
 	virtual ~SingletonBase()
 	{
-		if (!s_instance_table_.cleared_)
+		if (!s_instance_table_.is_cleared_)
 		{
-			s_instance_table_.remove(this);
+			s_instance_table_.erase(this);
 		}
 	}
 

@@ -1,13 +1,50 @@
 ﻿#pragma once
 
 #include <vector>
-#include "AStar/Types.h"
+#include <functional>
 #include "Misc/NonCopyable.h"
 
-namespace pf
+namespace a_star
 {
 	struct Node;
 
+	struct Vec2
+	{
+		unsigned short row;
+		unsigned short col;
+
+		Vec2() : row(0), col(0) {}
+		Vec2(unsigned short row, unsigned short col) : row(row), col(col) {}
+
+		bool operator== (const Vec2 &that) const
+		{
+			return row == that.row && col == that.col;
+		}
+
+		const Vec2& operator() (unsigned short row, unsigned short col)
+		{
+			this->row = row;
+			this->col = col;
+			return *this;
+		}
+	};
+
+	typedef std::function<bool(const Vec2&)> QueryCallBack;
+
+	struct AStarParam
+	{
+		bool			allow_corner;
+		unsigned short	total_row;
+		unsigned short	total_col;
+		Vec2			start_point;
+		Vec2			end_point;	
+		QueryCallBack	is_can_reach;
+		AStarParam() : total_row(0), total_col(0), is_can_reach(nullptr), allow_corner(false) {}
+	};
+
+	/**
+	 * A-Star algorithm
+	 */
 	class AStar : public NonCopyable
 	{
 	public:
@@ -15,114 +52,44 @@ namespace pf
 		~AStar();
 
 	public:
-		/**
-		 * 执行A*搜索
-		 * @param param 搜索参数
-		 * @return std::vector<Point> 搜索路径
-		 */
-		std::vector<Point> Search(const SearchParam &param);
+		std::vector<Vec2> Search(const AStarParam &param);
 
 	private:
-		/**
-		 * 清理
-		 */
 		void Clear();
 
-		/**
-		 * 初始化
-		 * @param param 搜索参数
-		 */
-		void Init(const SearchParam &param);
+		void Init(const AStarParam &param);
 
-		/**
-		 * 检测参数是否无效
-		 * @param param 搜索参数
-		 */
-		bool InvalidParam(const SearchParam &param);
+		bool InvalidParam(const AStarParam &param);
 
 	private:
-		/**
-		 * 点是否存在于开启列表
-		 * @param point 当前点
-		 * @return 存在返回格子结点的指针，不存在返回nullptr
-		 */
-		Node* IsExistInOpenList(const Point &point);
-
-		/**
-		 * 点是否存在于关闭列表
-		 * @param point 当前点
-		 * @return 存在返回true，不存在返回false
-		 */
-		bool IsExistInCloseList(const Point &point);
-
-		/**
-		 * 查询点是否可通行
-		 * @param target_point 目标点
-		 * @return 成功返回true，失败返回false
-		 */
-		bool IsCanReach(const Point &target_point);
-		bool IsCanReachAndExistInOpenList(const Point &target_point);
-
-		/**
-		 * 查询点是否可到达
-		 * @param current_point 当前点
-		 * @param target_point 目标点
-		 * @param allow_corner 是否允许拐角
-		 * @return 成功返回true，失败返回false
-		 */
-		bool IsCanReached(const Point &current_point, const Point &target_point, bool allow_corner);
-
-		/**
-		 * 搜索周围可通行的点
-		 * @param current_point 当前点
-		 * @param allow_corner 是否允许拐角
-		 * @param surround_point 存放搜索结果的数组
-		 */
-		void SearchCanReached(const Point &current_point, bool allow_corner, std::vector<Point> &surround_point);
-
-		/**
-		 * 计算G值
-		 * @param parent 父节点
-		 * @param current_point 当前点
-		 */
-		unsigned int CalculG(Node *parent, const Point &current_point);
-
-		/**
-		 * 计算H值
-		 * @param current_point 当前点
-		 * @param end_point 终点
-		 */
-		unsigned int CalculH(const Point &current_point, const Point &end_point);
-
-		/**
-		 * 获取节点在开启列表中的索引值
-		 * @param node 节点指针
-		 */
-		int GetNodeIndex(Node *node);
-
-		/**
-		 * 开启列表上滤
-		 * @param hole 上滤位置
-		 */
 		void PercolateUp(int hole);
 
-	private:
-		/**
-		 * 当节点存在于开启列表中的处理函数
-		 */
-		void HandleFoundNode(Node *current_point, Node *new_point);
+		int GetNodeIndex(Node *node);
 
-		/**
-		 * 当节点不存在于开启列表中的处理函数
-		 */
-		void HandleNotFoundNode(Node *current_point, Node *new_point, const Point &end_point);
+		bool HasNodeInCloseList(const Vec2 &point);
+
+		bool HasNodeInOpenList(const Vec2 &point, Node *&out);
+
+		bool IsCanReach(const Vec2 &point);
+
+		bool IsCanReach(const Vec2 &current, const Vec2 &target, bool allow_corner);
+
+		void SearchCanReachThePosition(const Vec2 &current, bool allow_corner, std::vector<Vec2> &can_each_pos);
+
+		unsigned int CalculG(Node *parent, const Vec2 &current);
+
+		unsigned int CalculH(const Vec2 &current, const Vec2 &end_point);
+
+		void HandleFoundNode(Node *current, Node *target);
+
+		void HandleNotFoundNode(Node *current, Node *target, const Vec2 &end_point);
 
 	private:
-		unsigned short		total_row_;			// 地图行数
-		unsigned short		total_col_;			// 地图列数
-		unsigned int		map_size_;			// 地图大小
-		QueryCallBack		query_func_;		// 查询函数
-		std::vector<Node *>	open_list_;			// 开启列表
-		std::vector<Node *>	maps_index_;		// 地图索引
+		unsigned short		total_row_;
+		unsigned short		total_col_;
+		unsigned int		map_size_;
+		QueryCallBack		query_func_;
+		std::vector<Node *>	open_list_;
+		std::vector<Node *>	maps_index_;
 	};
 }
