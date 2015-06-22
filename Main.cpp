@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "AStar.h"
-#include "Misc/Duration.h"
+#include "Duration.h"
 
 int main()
 {
@@ -22,19 +22,19 @@ int main()
 	};
 
 	// 搜索参数
-	pf::SearchParam param;
+	a_star::AStarParam param;
 	param.total_row = 1000;
 	param.total_col = 1000;
-	param.can_reach = [&](const pf::Point &point)->bool
+	param.is_can_reach = [&](const a_star::Vec2 &point)->bool
 	{
 		return maps[point.row][point.col] == 0;
 	};
-	param.start_point = pf::Point(0, 0);
-	param.end_point = pf::Point(999, 999);
+	param.start_point = a_star::Vec2(0, 0);
+	param.end_point = a_star::Vec2(999, 999);
 	param.allow_corner = false;
 
 	// 执行搜索
-	pf::AStar astar;
+	a_star::AStar astar;
 	Duration duration;
 	auto path = astar.Search(param);
 

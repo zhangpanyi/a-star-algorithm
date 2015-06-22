@@ -28,13 +28,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Classes\AStar.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Misc\BlockAllocator.h">
-      <Filter>Classes\Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Misc\Duration.h">
       <Filter>Classes\Misc</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Misc\NonCopyable.h">
@@ -43,8 +37,9 @@
     <ClInclude Include="Classes\Misc\Singleton.h">
       <Filter>Classes\Misc</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\AStar\Types.h">
-      <Filter>Classes\Astar</Filter>
+    <ClInclude Include="Duration.h" />
+    <ClInclude Include="Classes\AStar.h">
+      <Filter>Classes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

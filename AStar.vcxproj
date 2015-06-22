@@ -86,11 +86,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AStar.h" />
-    <ClInclude Include="Classes\AStar\Types.h" />
     <ClInclude Include="Classes\Misc\BlockAllocator.h" />
-    <ClInclude Include="Classes\Misc\Duration.h" />
     <ClInclude Include="Classes\Misc\NonCopyable.h" />
     <ClInclude Include="Classes\Misc\Singleton.h" />
+    <ClInclude Include="Duration.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
