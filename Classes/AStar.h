@@ -1,4 +1,10 @@
-﻿#pragma once
+﻿/**
+ * A* 算法
+ * author: zhangpanyi@live.com
+ * https://github.com/zhangpanyi/AStar
+ */
+
+#pragma once
 
 #include <vector>
 #include <functional>
