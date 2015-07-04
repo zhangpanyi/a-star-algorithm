@@ -22,21 +22,21 @@ int main()
 	};
 
 	// 搜索参数
-	a_star::AStarParam param;
-	param.total_row = 1000;
-	param.total_col = 1000;
-	param.is_can_reach = [&](const a_star::Vec2 &point)->bool
+	AStar::Param param;
+	param.width = 1000;
+	param.height = 1000;
+	param.corner = false;
+	param.start = AStar::Location(0, 0);
+	param.end = AStar::Location(999, 999);
+	param.is_canreach = [&](const AStar::Location &pos)->bool
 	{
-		return maps[point.row][point.col] == 0;
+		return maps[pos.row][pos.col] == 0;
 	};
-	param.start_point = a_star::Vec2(0, 0);
-	param.end_point = a_star::Vec2(999, 999);
-	param.allow_corner = false;
 
 	// 执行搜索
-	a_star::AStar astar;
+	AStar a_star;
 	Duration duration;
-	auto path = astar.Search(param);
+	auto path = a_star.Search(param);
 
 	std::cout << (path.empty() ? "路径未找到！" : "路径已找到！") << std::endl;
 	std::cout << "本次寻路耗时" << duration.NanoSeconds() << "纳秒" << std::endl;
