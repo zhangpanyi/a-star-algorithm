@@ -1,35 +1,39 @@
-﻿#pragma once
+﻿/**
+ * 时间长度计算
+ */
+
+#pragma once
 
 #include <chrono>
 
-class Duration
+class duration
 {
 public:
-	Duration()
+	duration()
 		: start_time_(std::chrono::system_clock::now())
 	{}
 
-	void Reset()
+	void reset()
 	{
 		start_time_ = std::chrono::system_clock::now();
 	}
 
-	std::chrono::seconds::rep Seconds()
+	std::chrono::seconds::rep seconds()
 	{
 		return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - start_time_).count();
 	}
 
-	std::chrono::milliseconds::rep MilliSeconds()
+	std::chrono::milliseconds::rep milli_seconds()
 	{
 		return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start_time_).count();
 	}
 
-	std::chrono::microseconds::rep MicroSeconds()
+	std::chrono::microseconds::rep micro_seconds()
 	{
 		return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now() - start_time_).count();
 	}
 
-	std::chrono::nanoseconds::rep NanoSeconds()
+	std::chrono::nanoseconds::rep nano_seconds()
 	{
 		return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - start_time_).count();
 	}

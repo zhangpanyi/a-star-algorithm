@@ -1,45 +1,34 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="资源文件">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Classes">
-      <UniqueIdentifier>{cb55168c-26d7-43e3-a807-7c5d7ad29c6a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Classes\Astar">
-      <UniqueIdentifier>{bedaea98-c5b0-491d-ba4f-ac6c4ae69f7b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Classes\Misc">
-      <UniqueIdentifier>{7bbaf743-d1df-430c-9396-af3c7d4a61b1}</UniqueIdentifier>
+    <Filter Include="src">
+      <UniqueIdentifier>{310242f1-3f0d-4268-89de-7104d167bc4f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Classes\Misc\BlockAllocator.cpp">
-      <Filter>Classes\Misc</Filter>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\a-star.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Misc\Singleton.cpp">
-      <Filter>Classes\Misc</Filter>
+    <ClCompile Include="src\block_allocator.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\AStar\AStar.cpp">
-      <Filter>Classes\Astar</Filter>
+    <ClCompile Include="src\singleton.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Classes\Misc\BlockAllocator.h">
-      <Filter>Classes\Misc</Filter>
+    <ClInclude Include="src\a-star.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Misc\NonCopyable.h">
-      <Filter>Classes\Misc</Filter>
+    <ClInclude Include="src\block_allocator.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Misc\Singleton.h">
-      <Filter>Classes\Misc</Filter>
+    <ClInclude Include="src\duration.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="Duration.h" />
-    <ClInclude Include="Classes\AStar.h">
-      <Filter>Classes</Filter>
+    <ClInclude Include="src\singleton.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

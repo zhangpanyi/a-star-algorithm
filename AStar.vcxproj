@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -10,6 +10,18 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\a-star.cpp" />
+    <ClCompile Include="src\block_allocator.cpp" />
+    <ClCompile Include="src\singleton.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\a-star.h" />
+    <ClInclude Include="src\block_allocator.h" />
+    <ClInclude Include="src\duration.h" />
+    <ClInclude Include="src\singleton.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{21E1529F-49A8-4FEE-B157-62603C623CF0}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -19,13 +31,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -78,19 +90,6 @@
       <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Classes\AStar\AStar.cpp" />
-    <ClCompile Include="Classes\Misc\BlockAllocator.cpp" />
-    <ClCompile Include="Classes\Misc\Singleton.cpp" />
-    <ClCompile Include="Main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Classes\AStar.h" />
-    <ClInclude Include="Classes\Misc\BlockAllocator.h" />
-    <ClInclude Include="Classes\Misc\NonCopyable.h" />
-    <ClInclude Include="Classes\Misc\Singleton.h" />
-    <ClInclude Include="Duration.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
