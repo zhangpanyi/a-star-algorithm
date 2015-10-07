@@ -5,20 +5,42 @@ static const int STEP_VALUE = 10;
 static const int OBLIQUE_VALUE = 14;
 
 
-a_star::a_star()
+AStar::AStar()
 	: width_(0)
 	, height_(0)
+	, step_value_(STEP_VALUE)
+	, oblique_value_(OBLIQUE_VALUE)
 	, query_function_(nullptr)
 {
 
 }
 
-a_star::~a_star()
+AStar::~AStar()
 {
 	clear();
 }
 
-void a_star::clear()
+int AStar::step_value() const
+{
+	return step_value_;
+}
+
+int AStar::oblique_value() const
+{
+	return oblique_value_;
+}
+
+void AStar::set_step_value(int value)
+{
+	step_value_ = value;
+}
+
+void AStar::set_oblique_value(int value)
+{
+	oblique_value_ = value;
+}
+
+void AStar::clear()
 {
 	size_t index = 0;
 	const size_t max_size = width_ * height_;
@@ -33,7 +55,7 @@ void a_star::clear()
 	query_function_ = nullptr;
 }
 
-void a_star::init(const Param &param)
+void AStar::init(const Param &param)
 {
 	width_ = param.width;
 	height_ = param.height;
@@ -46,7 +68,7 @@ void a_star::init(const Param &param)
 	maps_.resize(width_ * height_, nullptr);
 }
 
-bool a_star::vlid_param(const Param &param)
+bool AStar::vlid_param(const Param &param)
 {
 	return (param.is_canreach
 			&& (param.width > 0 && param.height > 0)
@@ -57,7 +79,7 @@ bool a_star::vlid_param(const Param &param)
 			);
 }
 
-bool a_star::get_node_index(Node *node, size_t &index)
+bool AStar::get_node_index(Node *node, size_t &index)
 {
 	index = 0;
 	const size_t size = open_list_.size();
@@ -72,7 +94,7 @@ bool a_star::get_node_index(Node *node, size_t &index)
 	return false;
 }
 
-void a_star::percolate_up(size_t hole)
+void AStar::percolate_up(size_t hole)
 {
 	size_t parent = 0;
 	while (hole > 1)
@@ -90,36 +112,36 @@ void a_star::percolate_up(size_t hole)
 	}
 }
 
-inline uint16_t a_star::calcul_g_value(Node *parent_node, const Vec2 &current_pos)
+inline uint16_t AStar::calcul_g_value(Node *parent_node, const Vec2 &current_pos)
 {
-	uint16_t g_value = ((abs(current_pos.y + current_pos.x - parent_node->pos.y - parent_node->pos.x)) == 2 ? OBLIQUE_VALUE : STEP_VALUE);
+	uint16_t g_value = ((abs(current_pos.y + current_pos.x - parent_node->pos.y - parent_node->pos.x)) == 2 ? oblique_value_ : step_value_);
 	return g_value += parent_node->g;
 }
 
-inline uint16_t a_star::calcul_h_value(const Vec2 &current_pos, const Vec2 &end_pos)
+inline uint16_t AStar::calcul_h_value(const Vec2 &current_pos, const Vec2 &end_pos)
 {
 	unsigned int h_value = abs(end_pos.y + end_pos.x - current_pos.y - current_pos.x);
-	return h_value * STEP_VALUE;
+	return h_value * step_value_;
 }
 
-inline bool a_star::has_node_in_open_list(const Vec2 &pos, Node *&out)
+inline bool AStar::has_node_in_open_list(const Vec2 &pos, Node *&out)
 {
 	out = maps_[pos.y * height_ + pos.x];
 	return out ? out->state == IN_OPENLIST : false;
 }
 
-inline bool a_star::has_node_in_close_list(const Vec2 &pos)
+inline bool AStar::has_node_in_close_list(const Vec2 &pos)
 {
 	Node *node_ptr = maps_[pos.y * height_ + pos.x];
 	return node_ptr ? node_ptr->state == IN_CLOSELIST : false;
 }
 
-bool a_star::is_can_arrive(const Vec2 &pos)
+bool AStar::is_can_arrive(const Vec2 &pos)
 {
 	return (pos.x >= 0 && pos.x < width_ && pos.y >= 0 && pos.y < height_) ? query_function_(pos) : false;
 }
 
-bool a_star::is_can_arrive(const Vec2 &current_pos, const Vec2 &target_pos, bool allow_corner)
+bool AStar::is_can_arrive(const Vec2 &current_pos, const Vec2 &target_pos, bool allow_corner)
 {
 	if (target_pos.x >= 0 && target_pos.x < width_ && target_pos.y >= 0 && target_pos.y < height_)
 	{
@@ -141,7 +163,7 @@ bool a_star::is_can_arrive(const Vec2 &current_pos, const Vec2 &target_pos, bool
 	return false;
 }
 
-void a_star::find_can_arrive_pos(const Vec2 &current_pos, bool allow_corner, std::vector<Vec2> &can_arrive_pos)
+void AStar::find_can_arrive_pos(const Vec2 &current_pos, bool allow_corner, std::vector<Vec2> &can_arrive_pos)
 {
 	Vec2 target_pos;
 	can_arrive_pos.clear();
@@ -176,7 +198,7 @@ void a_star::find_can_arrive_pos(const Vec2 &current_pos, bool allow_corner, std
 	}
 }
 
-void a_star::handle_found_node(Node *current_node, Node *target_node)
+void AStar::handle_found_node(Node *current_node, Node *target_node)
 {
 	unsigned int g_value = calcul_g_value(current_node, target_node->pos);
 	if (g_value < target_node->g)
@@ -192,7 +214,7 @@ void a_star::handle_found_node(Node *current_node, Node *target_node)
 	}
 }
 
-void a_star::handle_not_found_node(Node *current_node, Node *target_node, const Vec2 &end_pos)
+void AStar::handle_not_found_node(Node *current_node, Node *target_node, const Vec2 &end_pos)
 {
 	target_node->parent = current_node;
 	target_node->h = calcul_h_value(target_node->pos, end_pos);
@@ -209,7 +231,7 @@ void a_star::handle_not_found_node(Node *current_node, Node *target_node, const 
 	});
 }
 
-std::vector<a_star::Vec2> a_star::search(const Param &param)
+std::vector<AStar::Vec2> AStar::search(const Param &param)
 {
 	if (!vlid_param(param))
 	{

@@ -6,18 +6,18 @@
 
 #include <set>
 
-class singleton_base
+class SingletonBase
 {
-	class instance_table : public std::set < singleton_base * >
+	class InstanceTable : public std::set < SingletonBase * >
 	{
 	public:
-		instance_table()
+		InstanceTable()
 			: is_cleared_(false)
 		{
 
 		};
 
-		~instance_table()
+		~InstanceTable()
 		{
 			is_cleared_ = true;
 			for (auto instance_ptr : *this)
@@ -31,12 +31,12 @@ class singleton_base
 	};
 
 protected:
-	singleton_base()
+	SingletonBase()
 	{
 		s_instance_table_.insert(this);
 	}
 
-	virtual ~singleton_base()
+	virtual ~SingletonBase()
 	{
 		if (!s_instance_table_.is_cleared_)
 		{
@@ -45,11 +45,11 @@ protected:
 	}
 
 private:
-	static instance_table s_instance_table_;
+	static InstanceTable s_instance_table_;
 };
 
 template <typename T>
-class singleton : public singleton_base
+class Singleton : public SingletonBase
 {
 public:
 	static T* instance()
@@ -70,9 +70,9 @@ public:
 	}
 
 protected:
-	singleton() = default;
+	Singleton() = default;
 
-	virtual ~singleton()
+	virtual ~Singleton()
 	{
 		s_singleton_ = nullptr;
 	};
@@ -81,7 +81,7 @@ private:
 	static T* s_singleton_;
 };
 
-template<typename T> T* singleton<T>::s_singleton_ = nullptr;
+template<typename T> T* Singleton<T>::s_singleton_ = nullptr;
 
 #define SINGLETON(_class_name_)					\
 	private:									\

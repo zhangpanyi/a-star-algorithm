@@ -17,7 +17,7 @@ struct Block
 	Block *next;
 };
 
-int block_allocator::block_sizes_[g_block_sizes] =
+int BlockAllocator::block_sizes_[g_block_sizes] =
 {
 	16,		// 0
 	32,		// 1
@@ -35,11 +35,11 @@ int block_allocator::block_sizes_[g_block_sizes] =
 	640,	// 13
 };
 
-bool block_allocator::s_block_size_lookup_initialized_;
+bool BlockAllocator::s_block_size_lookup_initialized_;
 
-uint8_t block_allocator::s_block_size_lookup_[g_max_block_size + 1];
+uint8_t BlockAllocator::s_block_size_lookup_[g_max_block_size + 1];
 
-block_allocator::block_allocator()
+BlockAllocator::BlockAllocator()
 {
 	assert(g_block_sizes < UCHAR_MAX);
 
@@ -70,7 +70,7 @@ block_allocator::block_allocator()
 	}
 }
 
-block_allocator::~block_allocator()
+BlockAllocator::~BlockAllocator()
 {
 	for (int i = 0; i < num_chunk_count_; ++i)
 	{
@@ -79,7 +79,7 @@ block_allocator::~block_allocator()
 	::free(chunks_);
 }
 
-void* block_allocator::allocate(int size)
+void* BlockAllocator::allocate(int size)
 {
 	if (size == 0)
 	{
@@ -139,7 +139,7 @@ void* block_allocator::allocate(int size)
 	}
 }
 
-void block_allocator::free(void *p, int size)
+void BlockAllocator::free(void *p, int size)
 {
 	if (size == 0 || p == nullptr)
 	{
@@ -187,7 +187,7 @@ void block_allocator::free(void *p, int size)
 	free_lists_[index] = block;
 }
 
-void block_allocator::clear()
+void BlockAllocator::clear()
 {
 	for (int i = 0; i < num_chunk_count_; ++i)
 	{

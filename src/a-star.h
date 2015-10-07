@@ -13,7 +13,7 @@
 /**
  * A-Star algorithm
  */
-class a_star
+class AStar
 {
 public:
 	/**
@@ -86,11 +86,11 @@ private:
 	/**
 	 * 节点对象分配器
 	 */
-	class soa : public block_allocator, public singleton< soa >
+	class SamllObjectAllocator : public BlockAllocator, public Singleton< SamllObjectAllocator >
 	{
-		soa() = default;
-		~soa() = default;
-		friend class singleton< soa >;
+		SamllObjectAllocator() = default;
+		~SamllObjectAllocator() = default;
+		friend class Singleton< SamllObjectAllocator >;
 	};
 
 	/**
@@ -130,20 +130,28 @@ private:
 
 		void* operator new(std::size_t size)
 		{
-			return soa::instance()->allocate(size);
+			return SamllObjectAllocator::instance()->allocate(size);
 		}
 
 		void operator delete(void* p) throw()
 		{
-			soa::instance()->free(p, sizeof(Node));
+			SamllObjectAllocator::instance()->free(p, sizeof(Node));
 		}
 	};
 
 public:
-	a_star();
-	~a_star();
+	AStar();
+	~AStar();
 
 public:
+	int step_value() const;
+
+	int oblique_value() const;
+
+	void set_step_value(int value);
+
+	void set_oblique_value(int value);
+
 	std::vector<Vec2> search(const Param &param);
 
 private:
@@ -177,6 +185,8 @@ private:
 	void handle_not_found_node(Node *current_node, Node *target_node, const Vec2 &end_pos);
 
 private:
+	int						step_value_;
+	int						oblique_value_;
 	std::vector<Node *>		maps_;
 	uint16_t				height_;
 	uint16_t				width_;

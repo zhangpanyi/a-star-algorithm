@@ -6,10 +6,10 @@
 
 #include <chrono>
 
-class duration
+class Duration
 {
 public:
-	duration()
+	Duration()
 		: start_time_(std::chrono::system_clock::now())
 	{}
 

@@ -15,11 +15,11 @@ static const int g_chunk_array_increment = 128;
 /// This is a small object allocator used for allocating small
 /// objects that persist for more than one time step.
 /// See: http://www.codeproject.com/useritems/Small_Block_Allocator.asp
-class block_allocator
+class BlockAllocator
 {
 public:
-	block_allocator();
-	~block_allocator();
+	BlockAllocator();
+	~BlockAllocator();
 
 public:
 	void* allocate(int size);
