@@ -5,6 +5,7 @@
  */
 #pragma once
 
+#include <deque>
 #include <vector>
 #include <cstdint>
 #include <functional>
@@ -48,7 +49,7 @@ public:
 		}
 	};
 
-	typedef std::function<bool(const Vec2&)> query_function;
+	typedef std::function<bool(const Vec2&)> QueryFunction;
 
 	/**
 	 * 搜索参数
@@ -60,7 +61,7 @@ public:
 		uint16_t		width;
 		Vec2			start;
 		Vec2			end;
-		query_function	is_canreach;
+		QueryFunction	is_canreach;
 
 		Param()
 			: height(0)
@@ -70,7 +71,7 @@ public:
 		{
 		}
 
-		Param(const Vec2 &_start, const Vec2 &_end, uint16_t _width, uint16_t _height, const query_function &_is_canreach, bool _allow_corner)
+		Param(const Vec2 &_start, const Vec2 &_end, uint16_t _width, uint16_t _height, const QueryFunction &_is_canreach, bool _allow_corner)
 			: start(_start)
 			, end(_end)
 			, width(_width)
@@ -152,7 +153,7 @@ public:
 
 	void set_oblique_value(int value);
 
-	std::vector<Vec2> search(const Param &param);
+	std::deque<Vec2> search(const Param &param);
 
 private:
 	void clear();
@@ -174,11 +175,11 @@ private:
 
 	bool has_node_in_close_list(const Vec2 &pos);
 
-	bool is_can_arrive(const Vec2 &pos);
+	bool canreach(const Vec2 &pos);
 
-	bool is_can_arrive(const Vec2 &current_pos, const Vec2 &target_pos, bool allow_corner);
+	bool canreach(const Vec2 &current_pos, const Vec2 &target_pos, bool allow_corner);
 
-	void find_can_arrive_pos(const Vec2 &current_pos, bool allow_corner, std::vector<Vec2> &can_arrive_pos);
+	void find_canreach_pos(const Vec2 &current_pos, bool allow_corner, std::vector<Vec2> &canreach_pos);
 
 	void handle_found_node(Node *current_node, Node *target_node);
 
@@ -190,6 +191,6 @@ private:
 	std::vector<Node *>		maps_;
 	uint16_t				height_;
 	uint16_t				width_;
-	query_function			query_function_;
+	QueryFunction			query_;
 	std::vector<Node *>		open_list_;
 };

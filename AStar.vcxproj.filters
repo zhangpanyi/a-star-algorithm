@@ -6,7 +6,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="src\a-star.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -16,6 +15,7 @@
     <ClCompile Include="src\singleton.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\a-star.h">

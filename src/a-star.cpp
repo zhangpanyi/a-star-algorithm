@@ -10,7 +10,6 @@ AStar::AStar()
 	, height_(0)
 	, step_value_(STEP_VALUE)
 	, oblique_value_(OBLIQUE_VALUE)
-	, query_function_(nullptr)
 {
 
 }
@@ -51,15 +50,15 @@ void AStar::clear()
 
 	width_ = 0;
 	height_ = 0;
+	query_ = nullptr;
 	open_list_.resize(0);
-	query_function_ = nullptr;
 }
 
 void AStar::init(const Param &param)
 {
 	width_ = param.width;
 	height_ = param.height;
-	query_function_ = param.is_canreach;
+	query_ = param.is_canreach;
 
 	if (!maps_.empty())
 	{
@@ -136,12 +135,12 @@ inline bool AStar::has_node_in_close_list(const Vec2 &pos)
 	return node_ptr ? node_ptr->state == IN_CLOSELIST : false;
 }
 
-bool AStar::is_can_arrive(const Vec2 &pos)
+bool AStar::canreach(const Vec2 &pos)
 {
-	return (pos.x >= 0 && pos.x < width_ && pos.y >= 0 && pos.y < height_) ? query_function_(pos) : false;
+	return (pos.x >= 0 && pos.x < width_ && pos.y >= 0 && pos.y < height_) ? query_(pos) : false;
 }
 
-bool AStar::is_can_arrive(const Vec2 &current_pos, const Vec2 &target_pos, bool allow_corner)
+bool AStar::canreach(const Vec2 &current_pos, const Vec2 &target_pos, bool allow_corner)
 {
 	if (target_pos.x >= 0 && target_pos.x < width_ && target_pos.y >= 0 && target_pos.y < height_)
 	{
@@ -152,21 +151,21 @@ bool AStar::is_can_arrive(const Vec2 &current_pos, const Vec2 &target_pos, bool 
 
 		if (abs(current_pos.y + current_pos.x - target_pos.y - target_pos.x) == 1)
 		{
-			return query_function_(target_pos);
+			return query_(target_pos);
 		}
 		else if (allow_corner)
 		{
-			return (is_can_arrive(Vec2(current_pos.x + target_pos.x - current_pos.x, current_pos.y))
-					&& is_can_arrive(Vec2(current_pos.x, current_pos.y + target_pos.y - current_pos.y)));
+			return (canreach(Vec2(current_pos.x + target_pos.x - current_pos.x, current_pos.y))
+					&& canreach(Vec2(current_pos.x, current_pos.y + target_pos.y - current_pos.y)));
 		}
 	}
 	return false;
 }
 
-void AStar::find_can_arrive_pos(const Vec2 &current_pos, bool allow_corner, std::vector<Vec2> &can_arrive_pos)
+void AStar::find_canreach_pos(const Vec2 &current_pos, bool allow_corner, std::vector<Vec2> &canreach_pos)
 {
 	Vec2 target_pos;
-	can_arrive_pos.clear();
+	canreach_pos.clear();
 	int row_index = current_pos.y - 1;
 	const int max_row = current_pos.y + 1;
 	const int max_col = current_pos.x + 1;
@@ -188,9 +187,9 @@ void AStar::find_can_arrive_pos(const Vec2 &current_pos, bool allow_corner, std:
 		while (col_index <= max_col)
 		{
 			target_pos.set(col_index, row_index);
-			if (is_can_arrive(current_pos, target_pos, allow_corner))
+			if (canreach(current_pos, target_pos, allow_corner))
 			{
-				can_arrive_pos.push_back(target_pos);
+				canreach_pos.push_back(target_pos);
 			}
 			++col_index;
 		}
@@ -231,7 +230,7 @@ void AStar::handle_not_found_node(Node *current_node, Node *target_node, const V
 	});
 }
 
-std::vector<AStar::Vec2> AStar::search(const Param &param)
+std::deque<AStar::Vec2> AStar::search(const Param &param)
 {
 	if (!vlid_param(param))
 	{
@@ -239,7 +238,7 @@ std::vector<AStar::Vec2> AStar::search(const Param &param)
 	}
 
 	init(param);
-	std::vector<Vec2> paths;
+	std::deque<Vec2> paths;
 	std::vector<Vec2> nearby_nodes;
 	nearby_nodes.reserve(param.allow_corner ? 8 : 4);
 
@@ -264,7 +263,7 @@ std::vector<AStar::Vec2> AStar::search(const Param &param)
 		maps_[current_node->pos.y * height_ + current_node->pos.x]->state = IN_CLOSELIST;
 
 		// 搜索附近可通行的位置
-		find_can_arrive_pos(current_node->pos, param.allow_corner, nearby_nodes);
+		find_canreach_pos(current_node->pos, param.allow_corner, nearby_nodes);
 
 		size_t index = 0;
 		const size_t size = nearby_nodes.size();
@@ -287,10 +286,9 @@ std::vector<AStar::Vec2> AStar::search(const Param &param)
 				{
 					while (new_node->parent)
 					{
-						paths.push_back(new_node->pos);
+						paths.push_front(new_node->pos);
 						new_node = new_node->parent;
 					}
-					std::reverse(paths.begin(), paths.end());
 					goto __end__;
 				}
 			}
