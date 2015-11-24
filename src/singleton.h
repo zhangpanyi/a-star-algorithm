@@ -2,7 +2,8 @@
  * 单例模板类
  */
 
-#pragma once
+#ifndef __SINGLETON_H__
+#define __SINGLETON_H__
 
 #include <set>
 
@@ -88,3 +89,5 @@ template<typename T> T* Singleton<T>::s_singleton_ = nullptr;
 		_class_name_();							\
 		~_class_name_();						\
 		friend class Singleton<_class_name_>
+
+#endif

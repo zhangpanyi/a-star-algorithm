@@ -2,7 +2,8 @@
  * 小对象管理器
  */
 
-#pragma once
+#ifndef __BLOCKALLOCATOR_H__
+#define __BLOCKALLOCATOR_H__
 
 #include <cstdint>
 #include "singleton.h"
@@ -35,3 +36,5 @@ private:
 	static uint8_t	s_block_size_lookup_[g_max_block_size + 1];
 	static bool		s_block_size_lookup_initialized_;
 };
+
+#endif

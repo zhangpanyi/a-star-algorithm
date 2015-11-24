@@ -3,7 +3,9 @@
  * author: zhangpanyi@live.com
  * https://github.com/zhangpanyi/a-star.git
  */
-#pragma once
+
+#ifndef __ASTAR_H__
+#define __ASTAR_H__
 
 #include <deque>
 #include <vector>
@@ -194,3 +196,5 @@ private:
 	QueryFunction			query_;
 	std::vector<Node *>		open_list_;
 };
+
+#endif

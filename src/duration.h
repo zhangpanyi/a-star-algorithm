@@ -2,7 +2,8 @@
  * 时间长度计算
  */
 
-#pragma once
+#ifndef __DURATION_H__
+#define __DURATION_H__
 
 #include <chrono>
 
@@ -41,3 +42,5 @@ public:
 private:
 	std::chrono::system_clock::time_point start_time_;
 };
+
+#endif
