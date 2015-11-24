@@ -6,28 +6,26 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\a-star.cpp">
+    <ClCompile Include="src\AStar.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\block_allocator.cpp">
+    <ClCompile Include="src\BlockAllocator.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\singleton.cpp">
+    <ClCompile Include="src\Singleton.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="test.cpp" />
+    <ClCompile Include="Test.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\a-star.h">
+    <ClInclude Include="Duration.h" />
+    <ClInclude Include="src\AStar.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\block_allocator.h">
+    <ClInclude Include="src\BlockAllocator.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\duration.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\singleton.h">
+    <ClInclude Include="src\Singleton.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
