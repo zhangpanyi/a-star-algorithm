@@ -1,15 +1,16 @@
 ﻿#include "AStar.h"
+#include <cassert>
 #include <algorithm>
 
-static const int STEP_VALUE = 10;
-static const int OBLIQUE_VALUE = 14;
+const int kStepValue = 10;
+const int kObliqueValue = 14;
 
 
 AStar::AStar()
 	: width_(0)
 	, height_(0)
-	, step_value_(STEP_VALUE)
-	, oblique_value_(OBLIQUE_VALUE)
+	, step_value_(kStepValue)
+	, oblique_value_(kObliqueValue)
 {
 
 }
@@ -54,7 +55,7 @@ void AStar::clear()
 	open_list_.resize(0);
 }
 
-void AStar::init(const Param &param)
+void AStar::init_param(const Param &param)
 {
 	width_ = param.width;
 	height_ = param.height;
@@ -67,7 +68,7 @@ void AStar::init(const Param &param)
 	maps_.resize(width_ * height_, nullptr);
 }
 
-bool AStar::vlid_param(const Param &param)
+bool AStar::is_vlid_param(const Param &param)
 {
 	return (param.is_canreach
 			&& (param.width > 0 && param.height > 0)
@@ -210,6 +211,10 @@ void AStar::handle_found_node(Node *current_node, Node *target_node)
 		{
 			percolate_up(index);
 		}
+		else
+		{
+			assert(false);
+		}
 	}
 }
 
@@ -232,67 +237,69 @@ void AStar::handle_not_found_node(Node *current_node, Node *target_node, const V
 
 std::deque<AStar::Vec2> AStar::search(const Param &param)
 {
-	if (!vlid_param(param))
-	{
-		throw std::runtime_error("invalid param!");
-	}
-
-	init(param);
 	std::deque<Vec2> paths;
-	std::vector<Vec2> nearby_nodes;
-	nearby_nodes.reserve(param.allow_corner ? 8 : 4);
-
-	// 起点放入开启列表
-	Node *start_node = new Node(param.start);
-	open_list_.push_back(start_node);
-
-	// 设置起点所对应节点的状态
-	Node *&node_ptr = maps_[start_node->pos.y * height_ + start_node->pos.x];
-	node_ptr = start_node;
-	node_ptr->state = IN_OPENLIST;
-
-	while (!open_list_.empty())
+	if (!is_vlid_param(param))
 	{
-		// 取出F值最小的节点
-		Node *current_node = *open_list_.begin();
-		std::pop_heap(open_list_.begin(), open_list_.end(), [](const Node *a, const Node *b)->bool
+		assert(false);
+	}
+	else
+	{
+		init_param(param);
+		std::vector<Vec2> nearby_nodes;
+		nearby_nodes.reserve(param.allow_corner ? 8 : 4);
+
+		// 起点放入开启列表
+		Node *start_node = new Node(param.start);
+		open_list_.push_back(start_node);
+
+		// 设置起点所对应节点的状态
+		Node *&node_ptr = maps_[start_node->pos.y * height_ + start_node->pos.x];
+		node_ptr = start_node;
+		node_ptr->state = IN_OPENLIST;
+
+		while (!open_list_.empty())
 		{
-			return a->f() > b->f();
-		});
-		open_list_.pop_back();
-		maps_[current_node->pos.y * height_ + current_node->pos.x]->state = IN_CLOSELIST;
-
-		// 搜索附近可通行的位置
-		find_canreach_pos(current_node->pos, param.allow_corner, nearby_nodes);
-
-		size_t index = 0;
-		const size_t size = nearby_nodes.size();
-		while (index < size)
-		{
-			// 如果存在于开启列表
-			Node *new_node = nullptr;
-			if (has_node_in_open_list(nearby_nodes[index], new_node))
+			// 取出F值最小的节点
+			Node *current_node = *open_list_.begin();
+			std::pop_heap(open_list_.begin(), open_list_.end(), [](const Node *a, const Node *b)->bool
 			{
-				handle_found_node(current_node, new_node);
-			}
-			else
-			{
-				// 如果不存在于开启列表
-				new_node = new Node(nearby_nodes[index]);
-				handle_not_found_node(current_node, new_node, param.end);
+				return a->f() > b->f();
+			});
+			open_list_.pop_back();
+			maps_[current_node->pos.y * height_ + current_node->pos.x]->state = IN_CLOSELIST;
 
-				// 找到终点
-				if (nearby_nodes[index] == param.end)
+			// 搜索附近可通行的位置
+			find_canreach_pos(current_node->pos, param.allow_corner, nearby_nodes);
+
+			size_t index = 0;
+			const size_t size = nearby_nodes.size();
+			while (index < size)
+			{
+				// 如果存在于开启列表
+				Node *new_node = nullptr;
+				if (has_node_in_open_list(nearby_nodes[index], new_node))
 				{
-					while (new_node->parent)
-					{
-						paths.push_front(new_node->pos);
-						new_node = new_node->parent;
-					}
-					goto __end__;
+					handle_found_node(current_node, new_node);
 				}
+				else
+				{
+					// 如果不存在于开启列表
+					new_node = new Node(nearby_nodes[index]);
+					handle_not_found_node(current_node, new_node, param.end);
+
+					// 找到终点
+					if (nearby_nodes[index] == param.end)
+					{
+						while (new_node->parent)
+						{
+							paths.push_front(new_node->pos);
+							new_node = new_node->parent;
+						}
+						goto __end__;
+					}
+				}
+				++index;
 			}
-			++index;
 		}
 	}
 

@@ -160,9 +160,9 @@ public:
 private:
 	void clear();
 
-	void init(const Param &param);
+	void init_param(const Param &param);
 
-	bool vlid_param(const Param &param);
+	bool is_vlid_param(const Param &param);
 
 private:
 	void percolate_up(size_t hole);
