@@ -5,7 +5,6 @@
 const int kStepValue = 10;
 const int kObliqueValue = 14;
 
-
 AStar::AStar()
 	: width_(0)
 	, height_(0)
@@ -48,11 +47,9 @@ void AStar::clear()
 	{
 		delete maps_[index++];
 	}
-
-	width_ = 0;
-	height_ = 0;
 	query_ = nullptr;
-	open_list_.resize(0);
+	open_list_.clear();
+	width_ = height_ = 0;
 }
 
 void AStar::init_param(const Param &param)
@@ -60,7 +57,6 @@ void AStar::init_param(const Param &param)
 	width_ = param.width;
 	height_ = param.height;
 	query_ = param.is_canreach;
-
 	if (!maps_.empty())
 	{
 		memset(&maps_[0], 0, sizeof(Node *) * maps_.size());
@@ -97,7 +93,7 @@ bool AStar::get_node_index(Node *node, size_t &index)
 void AStar::percolate_up(size_t hole)
 {
 	size_t parent = 0;
-	while (hole > 1)
+	while (hole > 0)
 	{
 		parent = (hole - 1) / 2;
 		if (open_list_[hole]->f() < open_list_[parent]->f())

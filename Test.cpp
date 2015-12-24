@@ -34,7 +34,6 @@ int main()
 	AStar as;
 	Duration duration;
 	auto path = as.search(param);
-
 	std::cout << (path.empty() ? "路径未找到！" : "路径已找到！") << std::endl;
 	std::cout << "本次寻路耗时" << duration.nano_seconds() << "纳秒" << std::endl;
 	std::cout << '\n';
