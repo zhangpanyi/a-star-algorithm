@@ -23,5 +23,9 @@ AStar object;
 std::deque<AStar::Vec2> path = object.search(param);
 ```
 
+# 效率测试
+| adas | asad | asasd |
+| *** | *** | *** |
+
 # 实现思路
 [http://igameday.com/cpp/1.html](http://igameday.com/cpp/1.html)
