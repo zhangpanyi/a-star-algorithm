@@ -5,6 +5,23 @@
 支持c++11的编译器
 
 # 使用说明
+```c++
+// 搜索参数
+AStar::Param param;
+param.width = 10;
+param.height = 10;
+param.allow_corner = false;
+param.start = AStar::Vec2(0, 0);
+param.end = AStar::Vec2(9, 9);
+param.is_canreach = [&](const AStar::Vec2 &pos)->bool
+{
+    return maps[pos.y][pos.x] == 0;
+};
+
+// 执行搜索
+AStar object;
+std::deque<AStar::Vec2> path = object.search(param);
+```
 
 # 实现思路
 [http://igameday.com/cpp/1.html](http://igameday.com/cpp/1.html)
