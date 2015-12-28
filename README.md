@@ -3,3 +3,8 @@
 
 # 运行环境
 支持c++11的编译器
+
+# 使用说明
+
+# 实现思路
+[http://igameday.com/cpp/1.html](http://igameday.com/cpp/1.html)
