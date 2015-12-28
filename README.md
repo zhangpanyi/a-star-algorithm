@@ -28,4 +28,4 @@ std::deque<AStar::Vec2> path = object.search(param);
 | *** | *** | *** |
 
 # 实现思路
-[http://igameday.com/cpp/1.html](http://igameday.com/cpp/1.html)
+[http://igameday.com/2015/12/08/1.html](http://igameday.com/2015/12/08/1.html)
