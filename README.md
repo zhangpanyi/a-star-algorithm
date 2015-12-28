@@ -24,11 +24,11 @@ std::deque<AStar::Vec2> path = object.search(param);
 ```
 
 # 效率测试
-| Tables        | Are           | Cool  |
-| ------------- |:-------------:| -----:|
-| col 3 is      | right-aligned | $1600 |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
+| 地图大小 | 允许斜走 | 全程耗时 |
+| ---- | ---- | ---- |
+| 100 * 100 | right-aligned | $1600 |
+| 100 * 100 | centered      |   $12 |
+| 100 * 100 | are neat      |    $1 |
 
 # 实现思路
 [http://igameday.com/2015/12/08/1.html](http://igameday.com/2015/12/08/1.html)
