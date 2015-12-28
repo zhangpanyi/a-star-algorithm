@@ -24,8 +24,11 @@ std::deque<AStar::Vec2> path = object.search(param);
 ```
 
 # 效率测试
-| adas | asad | asasd |
-| *** | *** | *** |
+| Tables        | Are           | Cool  |
+| ------------- |:-------------:| -----:|
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 |
 
 # 实现思路
 [http://igameday.com/2015/12/08/1.html](http://igameday.com/2015/12/08/1.html)
