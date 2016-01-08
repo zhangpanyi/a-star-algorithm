@@ -6,7 +6,7 @@
 #define __BLOCKALLOCATOR_H__
 
 #include <cstdint>
-#include "singleton.h"
+#include "Singleton.h"
 
 static const int g_chunk_size = 16 * 1024;
 static const int g_max_block_size = 640;
