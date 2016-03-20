@@ -1,5 +1,7 @@
 project(AStarTest CXX)
 
+include_directories(../src)
+
 set(SRC_LIST
   Test.cpp
   ../src/AStar.cpp

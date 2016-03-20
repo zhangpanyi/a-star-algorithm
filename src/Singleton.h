@@ -6,6 +6,7 @@
 #define __SINGLETON_H__
 
 #include <list>
+#include <algorithm>
 
 class SingletonBase
 {

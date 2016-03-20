@@ -1,5 +1,6 @@
 ﻿#include "AStar.h"
 #include <cassert>
+#include <cstring>
 #include <algorithm>
 
 const int kStepValue = 10;
