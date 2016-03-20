@@ -16,30 +16,30 @@ AStar::AStar()
 
 AStar::~AStar()
 {
-	clear();
+	Clear();
 }
 
-int AStar::step_value() const
+int AStar::StepValue() const
 {
 	return step_value_;
 }
 
-int AStar::oblique_value() const
+int AStar::ObliqueValue() const
 {
 	return oblique_value_;
 }
 
-void AStar::set_step_value(int value)
+void AStar::SetStepValue(int value)
 {
 	step_value_ = value;
 }
 
-void AStar::set_oblique_value(int value)
+void AStar::SetObliqueValue(int value)
 {
 	oblique_value_ = value;
 }
 
-void AStar::clear()
+void AStar::Clear()
 {
 	size_t index = 0;
 	const size_t max_size = width_ * height_;
@@ -52,7 +52,7 @@ void AStar::clear()
 	width_ = height_ = 0;
 }
 
-void AStar::init_param(const Param &param)
+void AStar::InitParam(const Param &param)
 {
 	width_ = param.width;
 	height_ = param.height;
@@ -64,7 +64,7 @@ void AStar::init_param(const Param &param)
 	maps_.resize(width_ * height_, nullptr);
 }
 
-bool AStar::is_vlid_param(const Param &param)
+bool AStar::IsVlidParam(const Param &param)
 {
 	return (param.is_canreach
 			&& (param.width > 0 && param.height > 0)
@@ -75,7 +75,7 @@ bool AStar::is_vlid_param(const Param &param)
 			);
 }
 
-bool AStar::get_node_index(Node *node, size_t &index)
+bool AStar::GetNodeIndex(Node *node, size_t &index)
 {
 	index = 0;
 	const size_t size = open_list_.size();
@@ -90,7 +90,7 @@ bool AStar::get_node_index(Node *node, size_t &index)
 	return false;
 }
 
-void AStar::percolate_up(size_t hole)
+void AStar::PercolateUp(size_t hole)
 {
 	size_t parent = 0;
 	while (hole > 0)
@@ -108,40 +108,40 @@ void AStar::percolate_up(size_t hole)
 	}
 }
 
-inline uint16_t AStar::calcul_g_value(Node *parent_node, const Vec2 &current_pos)
+inline uint16_t AStar::CalculGValue(Node *parent_node, const Vec2 &current_pos)
 {
 	uint16_t g_value = ((abs(current_pos.y + current_pos.x - parent_node->pos.y - parent_node->pos.x)) == 2 ? oblique_value_ : step_value_);
 	return g_value += parent_node->g;
 }
 
-inline uint16_t AStar::calcul_h_value(const Vec2 &current_pos, const Vec2 &end_pos)
+inline uint16_t AStar::CalculHValue(const Vec2 &current_pos, const Vec2 &end_pos)
 {
 	unsigned int h_value = abs(end_pos.y + end_pos.x - current_pos.y - current_pos.x);
 	return h_value * step_value_;
 }
 
-inline bool AStar::has_node_in_open_list(const Vec2 &pos, Node *&out)
+inline bool AStar::HasNoodeInOpenList(const Vec2 &pos, Node *&out)
 {
 	out = maps_[pos.y * height_ + pos.x];
 	return out ? out->state == IN_OPENLIST : false;
 }
 
-inline bool AStar::has_node_in_close_list(const Vec2 &pos)
+inline bool AStar::HasNodeInCloseList(const Vec2 &pos)
 {
 	Node *node_ptr = maps_[pos.y * height_ + pos.x];
 	return node_ptr ? node_ptr->state == IN_CLOSELIST : false;
 }
 
-bool AStar::canreach(const Vec2 &pos)
+bool AStar::Canreach(const Vec2 &pos)
 {
 	return (pos.x >= 0 && pos.x < width_ && pos.y >= 0 && pos.y < height_) ? query_(pos) : false;
 }
 
-bool AStar::canreach(const Vec2 &current_pos, const Vec2 &target_pos, bool allow_corner)
+bool AStar::Canreach(const Vec2 &current_pos, const Vec2 &target_pos, bool allow_corner)
 {
 	if (target_pos.x >= 0 && target_pos.x < width_ && target_pos.y >= 0 && target_pos.y < height_)
 	{
-		if (has_node_in_close_list(target_pos))
+		if (HasNodeInCloseList(target_pos))
 		{
 			return false;
 		}
@@ -152,14 +152,14 @@ bool AStar::canreach(const Vec2 &current_pos, const Vec2 &target_pos, bool allow
 		}
 		else if (allow_corner)
 		{
-			return (canreach(Vec2(current_pos.x + target_pos.x - current_pos.x, current_pos.y))
-					&& canreach(Vec2(current_pos.x, current_pos.y + target_pos.y - current_pos.y)));
+			return (Canreach(Vec2(current_pos.x + target_pos.x - current_pos.x, current_pos.y))
+					&& Canreach(Vec2(current_pos.x, current_pos.y + target_pos.y - current_pos.y)));
 		}
 	}
 	return false;
 }
 
-void AStar::find_canreach_pos(const Vec2 &current_pos, bool allow_corner, std::vector<Vec2> &canreach_pos)
+void AStar::FindCanreachPos(const Vec2 &current_pos, bool allow_corner, std::vector<Vec2> &canreach_pos)
 {
 	Vec2 target_pos;
 	canreach_pos.clear();
@@ -184,7 +184,7 @@ void AStar::find_canreach_pos(const Vec2 &current_pos, bool allow_corner, std::v
 		while (col_index <= max_col)
 		{
 			target_pos.set(col_index, row_index);
-			if (canreach(current_pos, target_pos, allow_corner))
+			if (Canreach(current_pos, target_pos, allow_corner))
 			{
 				canreach_pos.push_back(target_pos);
 			}
@@ -194,18 +194,18 @@ void AStar::find_canreach_pos(const Vec2 &current_pos, bool allow_corner, std::v
 	}
 }
 
-void AStar::handle_found_node(Node *current_node, Node *target_node)
+void AStar::HandleFoundNode(Node *current_node, Node *target_node)
 {
-	unsigned int g_value = calcul_g_value(current_node, target_node->pos);
+	unsigned int g_value = CalculGValue(current_node, target_node->pos);
 	if (g_value < target_node->g)
 	{
 		target_node->g = g_value;
 		target_node->parent = current_node;
 
 		size_t index = 0;
-		if (get_node_index(target_node, index))
+		if (GetNodeIndex(target_node, index))
 		{
-			percolate_up(index);
+			PercolateUp(index);
 		}
 		else
 		{
@@ -214,11 +214,11 @@ void AStar::handle_found_node(Node *current_node, Node *target_node)
 	}
 }
 
-void AStar::handle_not_found_node(Node *current_node, Node *target_node, const Vec2 &end_pos)
+void AStar::HndleNotFoundNode(Node *current_node, Node *target_node, const Vec2 &end_pos)
 {
 	target_node->parent = current_node;
-	target_node->h = calcul_h_value(target_node->pos, end_pos);
-	target_node->g = calcul_g_value(current_node, target_node->pos);
+	target_node->h = CalculHValue(target_node->pos, end_pos);
+	target_node->g = CalculGValue(current_node, target_node->pos);
 
 	Node *&node_ptr = maps_[target_node->pos.y * height_ + target_node->pos.x];
 	node_ptr = target_node;
@@ -231,16 +231,16 @@ void AStar::handle_not_found_node(Node *current_node, Node *target_node, const V
 	});
 }
 
-std::deque<AStar::Vec2> AStar::search(const Param &param)
+std::deque<AStar::Vec2> AStar::Search(const Param &param)
 {
 	std::deque<Vec2> paths;
-	if (!is_vlid_param(param))
+	if (!IsVlidParam(param))
 	{
 		assert(false);
 	}
 	else
 	{
-		init_param(param);
+		InitParam(param);
 		std::vector<Vec2> nearby_nodes;
 		nearby_nodes.reserve(param.allow_corner ? 8 : 4);
 
@@ -265,7 +265,7 @@ std::deque<AStar::Vec2> AStar::search(const Param &param)
 			maps_[current_node->pos.y * height_ + current_node->pos.x]->state = IN_CLOSELIST;
 
 			// 搜索附近可通行的位置
-			find_canreach_pos(current_node->pos, param.allow_corner, nearby_nodes);
+			FindCanreachPos(current_node->pos, param.allow_corner, nearby_nodes);
 
 			size_t index = 0;
 			const size_t size = nearby_nodes.size();
@@ -273,15 +273,15 @@ std::deque<AStar::Vec2> AStar::search(const Param &param)
 			{
 				// 如果存在于开启列表
 				Node *new_node = nullptr;
-				if (has_node_in_open_list(nearby_nodes[index], new_node))
+				if (HasNoodeInOpenList(nearby_nodes[index], new_node))
 				{
-					handle_found_node(current_node, new_node);
+					HandleFoundNode(current_node, new_node);
 				}
 				else
 				{
 					// 如果不存在于开启列表
 					new_node = new Node(nearby_nodes[index]);
-					handle_not_found_node(current_node, new_node, param.end);
+					HndleNotFoundNode(current_node, new_node, param.end);
 
 					// 找到终点
 					if (nearby_nodes[index] == param.end)
@@ -300,6 +300,6 @@ std::deque<AStar::Vec2> AStar::search(const Param &param)
 	}
 
 __end__:
-	clear();
+	Clear();
 	return paths;
 }

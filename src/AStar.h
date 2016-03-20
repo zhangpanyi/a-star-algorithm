@@ -133,12 +133,12 @@ private:
 
 		void* operator new(std::size_t size)
 		{
-			return SamllObjectAllocator::instance()->allocate(size);
+			return SamllObjectAllocator::Instance()->Allocate(size);
 		}
 
 		void operator delete(void* p) throw()
 		{
-			SamllObjectAllocator::instance()->free(p, sizeof(Node));
+			SamllObjectAllocator::Instance()->Free(p, sizeof(Node));
 		}
 	};
 
@@ -147,45 +147,45 @@ public:
 	~AStar();
 
 public:
-	int step_value() const;
+	int StepValue() const;
 
-	int oblique_value() const;
+	int ObliqueValue() const;
 
-	void set_step_value(int value);
+	void SetStepValue(int value);
 
-	void set_oblique_value(int value);
+	void SetObliqueValue(int value);
 
-	std::deque<Vec2> search(const Param &param);
-
-private:
-	void clear();
-
-	void init_param(const Param &param);
-
-	bool is_vlid_param(const Param &param);
+	std::deque<Vec2> Search(const Param &param);
 
 private:
-	void percolate_up(size_t hole);
+	void Clear();
 
-	bool get_node_index(Node *node, size_t &index);
+	void InitParam(const Param &param);
 
-	uint16_t calcul_g_value(Node *parent_node, const Vec2 &current_pos);
+	bool IsVlidParam(const Param &param);
 
-	uint16_t calcul_h_value(const Vec2 &current_pos, const Vec2 &end_pos);
+private:
+	void PercolateUp(size_t hole);
 
-	bool has_node_in_open_list(const Vec2 &pos, Node *&out);
+	bool GetNodeIndex(Node *node, size_t &index);
 
-	bool has_node_in_close_list(const Vec2 &pos);
+	uint16_t CalculGValue(Node *parent_node, const Vec2 &current_pos);
 
-	bool canreach(const Vec2 &pos);
+	uint16_t CalculHValue(const Vec2 &current_pos, const Vec2 &end_pos);
 
-	bool canreach(const Vec2 &current_pos, const Vec2 &target_pos, bool allow_corner);
+	bool HasNoodeInOpenList(const Vec2 &pos, Node *&out);
 
-	void find_canreach_pos(const Vec2 &current_pos, bool allow_corner, std::vector<Vec2> &canreach_pos);
+	bool HasNodeInCloseList(const Vec2 &pos);
 
-	void handle_found_node(Node *current_node, Node *target_node);
+	bool Canreach(const Vec2 &pos);
 
-	void handle_not_found_node(Node *current_node, Node *target_node, const Vec2 &end_pos);
+	bool Canreach(const Vec2 &current_pos, const Vec2 &target_pos, bool allow_corner);
+
+	void FindCanreachPos(const Vec2 &current_pos, bool allow_corner, std::vector<Vec2> &canreach_pos);
+
+	void HandleFoundNode(Node *current_node, Node *target_node);
+
+	void HndleNotFoundNode(Node *current_node, Node *target_node, const Vec2 &end_pos);
 
 private:
 	int						step_value_;
