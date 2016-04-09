@@ -46,6 +46,3 @@ std::deque<AStar::Vec2> path = object.search(param);
 | 100 * 100 | 否 | 0.001s |
 | 1000 * 1000 | 是 | 0.004s |
 | 1000 * 1000 | 否 | 0.091s |
-
-# 实现思路
-[http://igameday.com/2015/12/08/1.html](http://igameday.com/2015/12/08/1.html)
