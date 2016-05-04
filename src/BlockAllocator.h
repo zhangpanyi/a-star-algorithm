@@ -23,9 +23,9 @@ public:
 	~BlockAllocator();
 
 public:
-	void* Allocate(int size);
-	void Free(void *p, int size);
-	void Clear();
+	void* allocate(int size);
+	void free(void *p, int size);
+	void clear();
 
 private:
 	int				num_chunk_count_;

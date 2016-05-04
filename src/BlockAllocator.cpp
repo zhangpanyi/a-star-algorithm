@@ -5,7 +5,6 @@
 #include <assert.h>
 #include "BlockAllocator.h"
 
-
 struct Chunk
 {
 	int block_size;
@@ -79,7 +78,7 @@ BlockAllocator::~BlockAllocator()
 	::free(chunks_);
 }
 
-void* BlockAllocator::Allocate(int size)
+void* BlockAllocator::allocate(int size)
 {
 	if (size == 0)
 	{
@@ -139,7 +138,7 @@ void* BlockAllocator::Allocate(int size)
 	}
 }
 
-void BlockAllocator::Free(void *p, int size)
+void BlockAllocator::free(void *p, int size)
 {
 	if (size == 0 || p == nullptr)
 	{
@@ -187,7 +186,7 @@ void BlockAllocator::Free(void *p, int size)
 	free_lists_[index] = block;
 }
 
-void BlockAllocator::Clear()
+void BlockAllocator::clear()
 {
 	for (int i = 0; i < num_chunk_count_; ++i)
 	{

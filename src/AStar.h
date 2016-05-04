@@ -7,7 +7,6 @@
 #ifndef __ASTAR_H__
 #define __ASTAR_H__
 
-#include <deque>
 #include <vector>
 #include <cstdint>
 #include <functional>
@@ -58,30 +57,19 @@ public:
 	 */
 	struct Param
 	{
-		bool			allow_corner;
+		bool			corner;
 		uint16_t		height;
 		uint16_t		width;
 		Vec2			start;
 		Vec2			end;
-		QueryFunction	is_canreach;
+		QueryFunction	can_reach;
 
 		Param()
 			: height(0)
 			, width(0)
-			, is_canreach(nullptr)
-			, allow_corner(false)
+			, corner(false)
+			, can_reach(nullptr)
 		{
-		}
-
-		Param(const Vec2 &_start, const Vec2 &_end, uint16_t _width, uint16_t _height, const QueryFunction &_is_canreach, bool _allow_corner)
-			: start(_start)
-			, end(_end)
-			, width(_width)
-			, height(_height)
-			, is_canreach(_is_canreach)
-			, allow_corner(_allow_corner)
-		{
-
 		}
 	};
 
@@ -133,12 +121,12 @@ private:
 
 		void* operator new(std::size_t size)
 		{
-			return SamllObjectAllocator::Instance()->Allocate(size);
+			return SamllObjectAllocator::getInstance()->allocate(size);
 		}
 
 		void operator delete(void* p) throw()
 		{
-			SamllObjectAllocator::Instance()->Free(p, sizeof(Node));
+			SamllObjectAllocator::getInstance()->free(p, sizeof(Node));
 		}
 	};
 
@@ -147,45 +135,45 @@ public:
 	~AStar();
 
 public:
-	int StepValue() const;
+	int stepValue() const;
 
-	int ObliqueValue() const;
+	int obliqueValue() const;
 
-	void SetStepValue(int value);
+	void setStepValue(int value);
 
-	void SetObliqueValue(int value);
+	void setObliqueValue(int value);
 
-	std::deque<Vec2> Search(const Param &param);
-
-private:
-	void Clear();
-
-	void InitParam(const Param &param);
-
-	bool IsVlidParam(const Param &param);
+	std::vector<Vec2> find(const Param &param);
 
 private:
-	void PercolateUp(size_t hole);
+	void clear();
 
-	bool GetNodeIndex(Node *node, size_t &index);
+	void initParam(const Param &param);
 
-	uint16_t CalculGValue(Node *parent_node, const Vec2 &current_pos);
+	bool isVlidParam(const Param &param);
 
-	uint16_t CalculHValue(const Vec2 &current_pos, const Vec2 &end_pos);
+private:
+	void percolateUp(size_t hole);
 
-	bool HasNoodeInOpenList(const Vec2 &pos, Node *&out);
+	bool getNodeIndex(Node *node, size_t &index);
 
-	bool HasNodeInCloseList(const Vec2 &pos);
+	uint16_t calculGValue(Node *parent_node, const Vec2 &current_pos);
 
-	bool Canreach(const Vec2 &pos);
+	uint16_t calculHValue(const Vec2 &current_pos, const Vec2 &end_pos);
 
-	bool Canreach(const Vec2 &current_pos, const Vec2 &target_pos, bool allow_corner);
+	bool hasNoodeInOpenList(const Vec2 &pos, Node *&out);
 
-	void FindCanreachPos(const Vec2 &current_pos, bool allow_corner, std::vector<Vec2> &canreach_pos);
+	bool hasNodeInCloseList(const Vec2 &pos);
 
-	void HandleFoundNode(Node *current_node, Node *target_node);
+	bool canReach(const Vec2 &pos);
 
-	void HndleNotFoundNode(Node *current_node, Node *target_node, const Vec2 &end_pos);
+	bool canReach(const Vec2 &current_pos, const Vec2 &target_pos, bool allow_corner);
+
+	void findCanReachPos(const Vec2 &current_pos, bool allow_corner, std::vector<Vec2> &can_reach);
+
+	void handleFoundNode(Node *current_node, Node *target_node);
+
+	void hndleNotFoundNode(Node *current_node, Node *target_node, const Vec2 &end_pos);
 
 private:
 	int						step_value_;

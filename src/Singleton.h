@@ -22,9 +22,9 @@ class SingletonBase
 		~InstanceTable()
 		{
 			is_cleared_ = true;
-			for (auto instance_ptr : *this)
+			for (auto instance : *this)
 			{
-				delete instance_ptr;
+				delete instance;
 			}
 		}
 
@@ -58,7 +58,7 @@ template <typename T>
 class Singleton : public SingletonBase
 {
 public:
-	static T* Instance()
+	static T* getInstance()
 	{
 		if (s_singleton_ == nullptr)
 		{
@@ -67,7 +67,7 @@ public:
 		return s_singleton_;
 	}
 
-	static void Destroy()
+	static void destroy()
 	{
 		if (s_singleton_)
 		{
