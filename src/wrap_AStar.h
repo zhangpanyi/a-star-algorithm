@@ -3,9 +3,6 @@
 
 struct lua_State;
 
-extern "C"
-{
-	int luaopen_astar(lua_State *L);
-}
+extern "C" int luaopen_astar(lua_State *L);
 
 #endif
