@@ -131,7 +131,7 @@ static int a_star_param_is_can_reach(lua_State *L)
 	return 0;
 }
 
-static int a_star_param_find(lua_State *L)
+static int a_star_algorithm_find(lua_State *L)
 {
 	AStarParam *l_param = check_a_star_param(L, 1);
 	lua_getglobal(L, l_param->can_reach.c_str());
@@ -207,7 +207,7 @@ int luaopen_a_star_param(lua_State *L)
 int luaopen_astar(lua_State *L)
 {
 	luaL_requiref(L, "AStarParam", luaopen_a_star_param, 1);
-	lua_pushcfunction(L, a_star_param_find);
+	lua_pushcfunction(L, a_star_algorithm_find);
 	lua_setglobal(L, "AStarFind");
 	return 0;
 }
