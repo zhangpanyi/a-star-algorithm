@@ -6,7 +6,7 @@
 
 # 使用示例
 ```c++
-char maps[10][10] =
+char maps[1000][1000] =
 {
 	{ 0, 1, 0, 0, 0, 1, 0, 0, 0, 0 },
 	{ 0, 0, 0, 1, 0, 1, 0, 1, 0, 1 },
@@ -22,19 +22,58 @@ char maps[10][10] =
 
 // 搜索参数
 AStar::Param param;
-param.width = 10;
-param.height = 10;
-param.allow_corner = false;
+param.width = 1000;
+param.height = 1000;
+param.corner = false;
 param.start = AStar::Vec2(0, 0);
-param.end = AStar::Vec2(9, 9);
-param.is_canreach = [&](const AStar::Vec2 &pos)->bool
+param.end = AStar::Vec2(999, 999);
+param.can_reach = [&](const AStar::Vec2 &pos)->bool
 {
-    return maps[pos.y][pos.x] == 0;
+	return maps[pos.y][pos.x] == 0;
 };
 
 // 执行搜索
-AStar object;
-std::deque<AStar::Vec2> path = object.search(param);
+AStar as;
+Duration duration;
+auto path = as.find(param);
+```
+
+# Lua的使用
+```
+local maps =
+{
+    0, 1, 0, 0, 0, 1, 0, 0, 0, 0,
+    0, 0, 0, 1, 0, 1, 0, 1, 0, 1,
+    1, 1, 1, 1, 0, 1, 0, 1, 0, 1,
+    0, 0, 0, 1, 0, 0, 0, 1, 0, 1,
+    0, 1, 0, 1, 1, 1, 1, 1, 0, 1,
+    0, 1, 0, 0, 0, 0, 0, 0, 0, 1,
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    0, 0, 0, 0, 1, 0, 0, 0, 1, 0,
+    1, 1, 0, 0, 1, 0, 1, 0, 0, 1,
+    0, 0, 0, 0, 0, 0, 1, 0, 0, 0
+}
+
+function can_reach(x, y)
+    idx = 1 + y * 10 + x
+    return maps[idx] == 0
+end
+
+local param = AStarParam.new()
+param:setSize(10, 10)
+param:setCorner(false)
+param:setStart(0, 0)
+param:setEnd(9, 9)
+param:setQueryFunc("can_reach")
+local paths = AStarFind(param)
+
+if #(paths) == 0 then
+    print("find fail!")
+else
+    for i=1, #(paths) do      
+        print(paths[i].x, paths[i].y)  
+    end
+end
 ```
 
 # 效率测试
