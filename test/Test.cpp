@@ -40,7 +40,7 @@ private:
 
 int main(int argc, char *argv[])
 {
-	char maps[1000][1000] =
+	char maps[10][10] =
 	{
 		{ 0, 1, 0, 0, 0, 1, 0, 0, 0, 0 },
 		{ 0, 0, 0, 1, 0, 1, 0, 1, 0, 1 },
@@ -56,11 +56,11 @@ int main(int argc, char *argv[])
 
 	// 搜索参数
 	AStar::Param param;
-	param.width = 1000;
-	param.height = 1000;
+	param.width = 10;
+	param.height = 10;
 	param.corner = false;
 	param.start = AStar::Vec2(0, 0);
-	param.end = AStar::Vec2(999, 999);
+	param.end = AStar::Vec2(9, 9);
 	param.can_reach = [&](const AStar::Vec2 &pos)->bool
 	{
 		return maps[pos.y][pos.x] == 0;

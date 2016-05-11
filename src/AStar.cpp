@@ -122,13 +122,13 @@ inline uint16_t AStar::calculHValue(const Vec2 &current_pos, const Vec2 &end_pos
 
 inline bool AStar::hasNoodeInOpenList(const Vec2 &pos, Node *&out)
 {
-	out = maps_[pos.y * height_ + pos.x];
+	out = maps_[pos.y * width_ + pos.x];
 	return out ? out->state == IN_OPENLIST : false;
 }
 
 inline bool AStar::hasNodeInCloseList(const Vec2 &pos)
 {
-	Node *node_ptr = maps_[pos.y * height_ + pos.x];
+	Node *node_ptr = maps_[pos.y * width_ + pos.x];
 	return node_ptr ? node_ptr->state == IN_CLOSELIST : false;
 }
 
@@ -220,7 +220,7 @@ void AStar::hndleNotFoundNode(Node *current_node, Node *target_node, const Vec2 
 	target_node->h = calculHValue(target_node->pos, end_pos);
 	target_node->g = calculGValue(current_node, target_node->pos);
 
-	Node *&node_ptr = maps_[target_node->pos.y * height_ + target_node->pos.x];
+	Node *&node_ptr = maps_[target_node->pos.y * width_ + target_node->pos.x];
 	node_ptr = target_node;
 	node_ptr->state = IN_OPENLIST;
 
@@ -247,7 +247,7 @@ std::vector<AStar::Vec2> AStar::find(const Param &param)
 		Node *start_node = new Node(param.start);
 		open_list_.push_back(start_node);
 
-		Node *&node_ptr = maps_[start_node->pos.y * height_ + start_node->pos.x];
+		Node *&node_ptr = maps_[start_node->pos.y * width_ + start_node->pos.x];
 		node_ptr = start_node;
 		node_ptr->state = IN_OPENLIST;
 
@@ -259,7 +259,7 @@ std::vector<AStar::Vec2> AStar::find(const Param &param)
 				return a->f() > b->f();
 			});
 			open_list_.pop_back();
-			maps_[current_node->pos.y * height_ + current_node->pos.x]->state = IN_CLOSELIST;
+			maps_[current_node->pos.y * width_ + current_node->pos.x]->state = IN_CLOSELIST;
 
 			findCanReachPos(current_node->pos, param.corner, nearby_nodes);
 
