@@ -34,7 +34,6 @@ param.can_reach = [&](const AStar::Vec2 &pos)->bool
 
 // 执行搜索
 AStar as;
-Duration duration;
 auto path = as.find(param);
 ```
 
