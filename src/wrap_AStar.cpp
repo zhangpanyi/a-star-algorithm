@@ -1,213 +1,226 @@
-#include "lua.hpp"
 #include <string>
 #include "AStar.h"
 #include "wrap_AStar.h"
+#include "../LuaFunction.hpp"
 
-struct AStarParam
+#define AStarParamMETA  "astar.Param"
+
+static inline AStar::Param** toParamp(lua_State* L){
+    return (AStar::Param**)luaL_checkudata(L, 1, AStarParamMETA);
+}
+
+AStar::Param* toParam(lua_State* L) {
+    auto w = toParamp(L);
+    if (*w == NULL)
+        luaL_error(L, "Param already closed");
+    return *w;
+}
+
+static int Param_create(lua_State* L)
 {
-	int width;
-	int height;
-	bool corner;
-	AStar::Vec2 start;
-	AStar::Vec2 end;
-	std::string can_reach;
+    AStar::Param** w = (AStar::Param**)lua_newuserdata(L, sizeof(*w));
 
-	AStarParam()
-		: width(0)
-		, height(0)
-		, corner(false)
-	{
-	}
+    *w = new AStar::Param();
 
-	~AStarParam() {}
+    luaL_getmetatable(L, AStarParamMETA);
+    lua_setmetatable(L, -2);
+
+    return 1;
+}
+
+static int Param_gc(lua_State* L)
+{
+    auto w = toParamp(L);
+
+    printf("finalizing LUA object (%s)\n", AStarParamMETA);
+
+    if (!*w)
+        return 0;
+
+    delete *w;
+    *w = nullptr; // mark as closed
+    return 0;
+}
+
+static int Param_tostring(lua_State* L)
+{
+    auto w = toParamp(L);
+    if (*w)
+        lua_pushfstring(L, "Param (%p)", *w);
+    else
+        lua_pushliteral(L, "Param (closed)");
+    return 1;
+}
+
+static int Param_getSize(lua_State* L) {
+    auto w = toParam(L);
+    if(w) {
+        lua_pushinteger(L, w->width);
+        return 1;
+    }
+
+    return 0;
+}
+
+static int Param_setSize(lua_State* L) {
+    auto w = toParam(L);
+    auto width = luaL_checkinteger(L, 2);
+    auto height = luaL_checkinteger(L, 3);
+    if(w) {
+        w->height = height;
+        w->width = width;
+    }
+
+    return 0;
+}
+
+static int Param_getCorner(lua_State* L) {
+    auto w = toParam(L);
+    if(w) {
+        lua_pushboolean(L, w->corner);
+        return 1;
+    }
+
+    return 0;
+}
+
+static int Param_setCorner(lua_State* L) {
+    auto w = toParam(L);
+    bool corner = lua_toboolean(L, 2);
+    if(w) {
+        w->corner = corner;
+    }
+
+    return 0;
+}
+
+static int Param_getStart(lua_State* L) {
+    auto w = toParam(L);
+    if(w) {
+        lua_pushinteger(L, w->start.x);
+        lua_pushinteger(L, w->start.y);
+
+        return 2;
+    }
+
+    return 0;
+}
+
+static int Param_setStart(lua_State* L) {
+    auto w = toParam(L);
+    auto x = lua_tointeger(L, 2);
+    auto y = lua_tointeger(L, 3);
+    if(w) {
+        w->start.x = x;
+        w->start.y = y;
+    }
+
+    return 0;
+}
+
+
+static int Param_getEnd(lua_State* L) {
+    auto w = toParam(L);
+    if(w) {
+        lua_pushinteger(L, w->end.x);
+        lua_pushinteger(L, w->end.y);
+
+        return 2;
+    }
+
+    return 0;
+}
+
+static int Param_setEnd(lua_State* L) {
+    auto w = toParam(L);
+    auto x = lua_tointeger(L, 2);
+    auto y = lua_tointeger(L, 3);
+    if(w) {
+        w->end.x = x;
+        w->end.y = y;
+    }
+
+    return 0;
+}
+
+static bool cacheReturn = false;
+static LuaFunction* _call = nullptr;
+static int Param_setQueryFunc(lua_State* L) {
+    if (_call) {
+      delete _call;
+      _call = nullptr;
+    }
+
+    auto w = toParam(L);
+    _call = new LuaFunction(L, 2);
+    _call->setReturnCnt(1);
+    _call->setCheckReturnFunction([](lua_State* L){
+      luaL_argcheck(L, lua_isboolean(L, -1), -1, "'boolean' expected");
+		  cacheReturn = lua_toboolean(L, -1);
+    });
+
+    w->can_reach = [L](const AStar::Vec2 &pos)->bool {
+      int x = (int)pos.x;
+      int y = (int)pos.y;
+      (*_call)(x, y);
+      return cacheReturn;
+    };
+
+    return 0;
+}
+
+static int Param_find(lua_State* L) {
+  static AStar as;
+  auto w = toParam(L);
+  auto paths = as.find(*w);
+
+  lua_createtable(L, paths.size(), 0);
+  for (size_t i = 0; i < paths.size(); ++i)
+  {
+      lua_createtable(L, 0, 2);
+      lua_pushinteger(L, paths[i].x);
+      lua_rawseti(L, -2, 1);
+      lua_pushinteger(L, paths[i].y);
+      lua_rawseti(L, -2, 2);
+      lua_rawseti(L, -2, i + 1);
+  }
+  return 1;
+}
+
+static luaL_Reg methods[] = {
+    { "__gc", Param_gc },
+    { "__tostring", Param_tostring },
+    { "getSize", Param_getSize },
+    { "setSize", Param_setSize },
+    { "getCorner", Param_getCorner },
+    { "setCorner", Param_setCorner },
+    { "getStart", Param_getStart },
+    { "setStart", Param_setStart },
+    { "getEnd", Param_getEnd },
+    { "setEnd", Param_setEnd },
+    { "setQueryFunc", Param_setQueryFunc },
+
+    { NULL, NULL },
 };
 
-static AStarParam* check_a_star_param(lua_State *L, int idx = -1)
-{
-	void *data = luaL_checkudata(L, idx, "meta_AStarParam");
-	luaL_argcheck(L, data != nullptr, idx, "'AStarParam' expected");
-	return reinterpret_cast<AStarParam *>(data);
-}
+static luaL_Reg api[] = {
+    { "Param", Param_create },
+    { "find", Param_find },
 
-static int a_star_param_new(lua_State *L)
-{
-	lua_newuserdata(L, sizeof(AStarParam));
-	luaL_setmetatable(L, "meta_AStarParam");
-	AStarParam *param = check_a_star_param(L);
-	param->AStarParam::AStarParam();
-	return 1;
-}
-
-static int a_star_param_gc(lua_State *L)
-{
-	AStarParam *param = check_a_star_param(L);
-	param->AStarParam::~AStarParam();
-	return 0;
-}
-
-static int a_star_param_get_size(lua_State *L)
-{
-	AStarParam *param = check_a_star_param(L);
-	lua_createtable(L, 0, 2);
-	lua_pushinteger(L, param->width);
-	lua_setfield(L, -2, "width");
-	lua_pushinteger(L, param->height);
-	lua_setfield(L, -2, "height");
-	return 1;
-}
-
-static int a_star_param_set_size(lua_State *L)
-{
-	AStarParam *param = check_a_star_param(L, 1);
-	luaL_checkinteger(L, 2);
-	luaL_checkinteger(L, 3);
-	param->width = lua_tointeger(L, 2);
-	param->height = lua_tointeger(L, 3);
-	return 0;
-}
-
-static int a_star_param_get_corner(lua_State *L)
-{
-	AStarParam *param = check_a_star_param(L);
-	lua_pushboolean(L, param->corner);
-	return 1;
-}
-
-static int a_star_param_set_corner(lua_State *L)
-{
-	AStarParam *param = check_a_star_param(L, 1);
-	luaL_argcheck(L, lua_isboolean(L, 2), 2, "'boolean' expected");
-	param->corner = lua_toboolean(L, 2);
-	return 0;
-}
-
-static int a_star_param_get_start(lua_State *L)
-{
-	AStarParam *param = check_a_star_param(L);
-	lua_createtable(L, 0 ,2);
-	lua_pushinteger(L, param->start.x);
-	lua_setfield(L, -2, "x");
-	lua_pushinteger(L, param->start.y);
-	lua_setfield(L, -2, "y");
-	return 1;
-}
-
-static int a_star_param_set_start(lua_State *L)
-{
-	AStarParam *param = check_a_star_param(L, 1);
-	luaL_checkinteger(L, 2);
-	luaL_checkinteger(L, 3);
-	param->start.x = lua_tointeger(L, 2);
-	param->start.y = lua_tointeger(L, 3);
-	return 0;
-}
-
-static int a_star_param_get_end(lua_State *L)
-{
-	AStarParam *param = check_a_star_param(L);
-	lua_createtable(L, 0, 2);
-	lua_pushinteger(L, param->end.x);
-	lua_setfield(L, -2, "x");
-	lua_pushinteger(L, param->end.y);
-	lua_setfield(L, -2, "y");
-	return 1;
-}
-
-static int a_star_param_set_end(lua_State *L)
-{
-	AStarParam *param = check_a_star_param(L, 1);
-	luaL_checkinteger(L, 2);
-	luaL_checkinteger(L, 3);
-	param->end.x = lua_tointeger(L, 2);
-	param->end.y = lua_tointeger(L, 3);
-	return 0;
-}
-
-static int a_star_param_is_can_reach(lua_State *L)
-{
-	AStarParam *param = check_a_star_param(L, 1);
-	luaL_checkstring(L, 2);
-	param->can_reach = lua_tostring(L, 2);
-	return 0;
-}
-
-static int a_star_algorithm_find(lua_State *L)
-{
-	AStarParam *l_param = check_a_star_param(L, 1);
-	lua_getglobal(L, l_param->can_reach.c_str());
-
-	AStar::Param param;
-	param.width = l_param->width;
-	param.height = l_param->height;
-	param.corner = l_param->corner;
-	param.start = l_param->start;
-	param.end = l_param->end;
-	param.can_reach = [&](const AStar::Vec2 &pos)->bool
-	{
-		lua_pushvalue(L, -1);
-		lua_pushinteger(L, pos.x);
-		lua_pushinteger(L, pos.y);
-		lua_pcall(L, 2, 1, 0);
-		luaL_argcheck(L, lua_isboolean(L, -1), -1, "'boolean' expected");
-		bool ret = lua_toboolean(L, -1);
-		lua_pop(L, 1);
-		return ret;
-	};
-
-	static AStar instance;
-	auto paths = instance.find(param);
-
-	lua_createtable(L, paths.size(), 0);
-	for (size_t i = 0; i < paths.size(); ++i)
-	{
-		lua_createtable(L, 0, 2);
-		lua_pushinteger(L, paths[i].x);
-		lua_setfield(L, -2, "x");
-		lua_pushinteger(L, paths[i].y);
-		lua_setfield(L, -2, "y");
-		lua_rawseti(L, -2, i + 1);
-	}
-
-	return 1;
-}
-
-static const luaL_Reg lua_a_star_param_lib_f[] =
-{
-	{ "new", a_star_param_new },
-	{ nullptr, nullptr }
+    { NULL, NULL },
 };
-
-static const luaL_Reg lua_a_star_param_lib_m[] =
-{
-	{ "getSize", a_star_param_get_size },
-	{ "setSize", a_star_param_set_size },
-	{ "getCorner", a_star_param_get_corner },
-	{ "setCorner", a_star_param_set_corner },
-	{ "getStart", a_star_param_get_start },
-	{ "setStart", a_star_param_set_start },
-	{ "getEnd", a_star_param_get_end },
-	{ "setEnd", a_star_param_set_end },
-	{ "setQueryFunc", a_star_param_is_can_reach },
-	{ "__gc", a_star_param_gc },
-	{ nullptr, nullptr }
-};
-
-int luaopen_a_star_param(lua_State *L)
-{
-	luaL_newmetatable(L, "meta_AStarParam");
-	lua_pushvalue(L, -1);
-	lua_setfield(L, -2, "__index");
-	luaL_setfuncs(L, lua_a_star_param_lib_m, 0);
-
-	luaL_newlib(L, lua_a_star_param_lib_f);
-
-	return 1;
-}
 
 int luaopen_astar(lua_State *L)
 {
-	luaL_requiref(L, "AStarParam", luaopen_a_star_param, 1);
-	lua_pushcfunction(L, a_star_algorithm_find);
-	lua_setglobal(L, "AStarFind");
-	return 0;
+    // create the class Metatable
+    luaL_newmetatable(L, AStarParamMETA);
+    lua_pushvalue(L, -1);
+    lua_setfield(L, -2, "__index");
+    luaL_register(L, NULL, methods);
+    lua_pop(L, 1);
+
+    // register the net api
+    lua_newtable(L);
+    luaL_register(L, NULL, api);
+	return 1;
 }
