@@ -136,8 +136,8 @@ static int Param_setEnd(lua_State* L) {
     auto x = lua_tointeger(L, 2);
     auto y = lua_tointeger(L, 3);
     if(w) {
-        w->start.x = x;
-        w->start.y = y;
+        w->end.x = x;
+        w->end.y = y;
     }
 
     return 0;
