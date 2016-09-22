@@ -1,8 +1,18 @@
 ﻿#ifndef __WRAP_ASTAR_H__
 #define __WRAP_ASTAR_H__
 
-struct lua_State;
+#if __cplusplus
+extern "C" {
+#endif
+    
+#include "lua.h"
+#include "lauxlib.h"
 
-extern "C" int luaopen_astar(lua_State *L);
+int luaopen_astar(lua_State *L);
+    
+#if __cplusplus
+}
+#endif
+
 
 #endif
