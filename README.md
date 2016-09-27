@@ -33,54 +33,6 @@ param.can_reach = [&](const AStar::Vec2 &pos)->bool
 };
 
 // 执行搜索
-AStar as;
-auto path = as.find(param);
+BlockAllocator allocator;
+AStar algorithm(&allocator);
 ```
-
-# Lua的使用
-```
-local maps =
-{
-    0, 1, 0, 0, 0, 1, 0, 0, 0, 0,
-    0, 0, 0, 1, 0, 1, 0, 1, 0, 1,
-    1, 1, 1, 1, 0, 1, 0, 1, 0, 1,
-    0, 0, 0, 1, 0, 0, 0, 1, 0, 1,
-    0, 1, 0, 1, 1, 1, 1, 1, 0, 1,
-    0, 1, 0, 0, 0, 0, 0, 0, 0, 1,
-    0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    0, 0, 0, 0, 1, 0, 0, 0, 1, 0,
-    1, 1, 0, 0, 1, 0, 1, 0, 0, 1,
-    0, 0, 0, 0, 0, 0, 1, 0, 0, 0
-}
-
-function can_reach(x, y)
-    idx = 1 + y * 10 + x
-    return maps[idx] == 0
-end
-
-local param = AStarParam.new()
-param:setSize(10, 10)
-param:setCorner(false)
-param:setStart(0, 0)
-param:setEnd(9, 9)
-param:setQueryFunc("can_reach")
-local paths = AStarFind(param)
-
-if #(paths) == 0 then
-    print("find fail!")
-else
-    for i=1, #(paths) do      
-        print(paths[i].x, paths[i].y)  
-    end
-end
-```
-
-# 效率测试
-测试实在无阻碍地图上进行的，计算从左上角搜索到右下角所耗费的时间。与实际项目中可能有偏差。
-
-| 地图大小 | 允许斜走 | 全程耗时 |
-| ---- | ---- | ---- |
-| 100 * 100 | 是| 0.000s |
-| 100 * 100 | 否 | 0.001s |
-| 1000 * 1000 | 是 | 0.004s |
-| 1000 * 1000 | 否 | 0.091s |

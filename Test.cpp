@@ -1,6 +1,7 @@
 ﻿#include <chrono>
 #include <iostream>
 #include "AStar.h"
+#include "BlockAllocator.h"
 
 class Duration
 {
@@ -67,9 +68,10 @@ int main(int argc, char *argv[])
 	};
 
 	// 执行搜索
-	AStar as;
+    BlockAllocator allocator;
+	AStar algorithm(&allocator);
 	Duration duration;
-	auto path = as.find(param);
+	auto path = algorithm.find(param);
 	std::cout << (path.empty() ? "路径未找到！" : "路径已找到！") << std::endl;
 	std::cout << "本次寻路耗时" << duration.nano_seconds() << "纳秒" << std::endl;
 	std::cout << '\n';
