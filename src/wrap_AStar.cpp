@@ -144,25 +144,19 @@ static int Param_setEnd(lua_State* L) {
 }
 
 static bool cacheReturn = false;
-static LuaFunction* _call = nullptr;
 static int Param_setQueryFunc(lua_State* L) {
-    if (_call) {
-      delete _call;
-      _call = nullptr;
-    }
-
     auto w = toParam(L);
-    _call = new LuaFunction(L, 2);
-    _call->setReturnCnt(1);
-    _call->setCheckReturnFunction([](lua_State* L){
+    LuaFunction call(L, 2);
+    call.setReturnCnt(1);
+    call.setCheckReturnFunction([](lua_State* L){
       luaL_argcheck(L, lua_isboolean(L, -1), -1, "'boolean' expected");
 		  cacheReturn = lua_toboolean(L, -1);
     });
 
-    w->can_reach = [L](const AStar::Vec2 &pos)->bool {
+    w->can_reach = [L,call](const AStar::Vec2 &pos)->bool {
       int x = (int)pos.x;
       int y = (int)pos.y;
-      (*_call)(x, y);
+      call(x, y);
       return cacheReturn;
     };
 
