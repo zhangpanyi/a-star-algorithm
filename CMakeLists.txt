@@ -6,4 +6,4 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 endif()
 
-add_executable(Test test.cpp src/a-star.cpp src/blockallocator.cpp)
+add_executable(Test main.cpp src/a-star.cpp src/blockallocator.cpp)
