@@ -53,7 +53,7 @@ void AStar::clear()
 	const size_t max_size = width_ * height_;
 	while (index < max_size)
 	{
-        allocator_->free(mapping_[index++], sizeof(Node));
+        allocator_->free(map_[index++], sizeof(Node));
         index++;
 	}
 	open_list_.clear();
@@ -67,11 +67,11 @@ void AStar::init_param(const Param &param)
 	width_ = param.width;
 	height_ = param.height;
     query_cb_ = param.can_reach;
-	if (!mapping_.empty())
+	if (!map_.empty())
 	{
-		memset(&mapping_[0], 0, sizeof(Node*) * mapping_.size());
+		memset(&map_[0], 0, sizeof(Node*) * map_.size());
 	}
-	mapping_.resize(width_ * height_, nullptr);
+    map_.resize(width_ * height_, nullptr);
 }
 
 // 参数是否有效
@@ -138,14 +138,14 @@ inline uint16_t AStar::calcul_h_value(const Vec2 &current_pos, const Vec2 &end_p
 // 节点是否存在于开启列表
 inline bool AStar::has_noode_in_open_list(const Vec2 &pos, Node *&out)
 {
-	out = mapping_[pos.y * width_ + pos.x];
+	out = map_[pos.y * width_ + pos.x];
 	return out ? out->state == IN_OPENLIST : false;
 }
 
 // 节点是否存在于关闭列表
 inline bool AStar::has_node_in_close_list(const Vec2 &pos)
 {
-	Node *node_ptr = mapping_[pos.y * width_ + pos.x];
+	Node *node_ptr = map_[pos.y * width_ + pos.x];
 	return node_ptr ? node_ptr->state == IN_CLOSELIST : false;
 }
 
@@ -242,7 +242,7 @@ void AStar::handle_not_found_node(Node *current_node, Node *target_node, const V
 	target_node->h = calcul_h_value(target_node->pos, end_pos);
 	target_node->g = calcul_g_value(current_node, target_node->pos);
 
-	Node *&node_ptr = mapping_[target_node->pos.y * width_ + target_node->pos.x];
+	Node *&node_ptr = map_[target_node->pos.y * width_ + target_node->pos.x];
 	node_ptr = target_node;
 	node_ptr->state = IN_OPENLIST;
 
@@ -270,7 +270,7 @@ std::vector<AStar::Vec2> AStar::find(const Param &param)
 		Node *start_node = new(allocator_->allocate(sizeof(Node))) Node(param.start);
 		open_list_.push_back(start_node);
 
-		Node *&node_ptr = mapping_[start_node->pos.y * width_ + start_node->pos.x];
+		Node *&node_ptr = map_[start_node->pos.y * width_ + start_node->pos.x];
 		node_ptr = start_node;
 		node_ptr->state = IN_OPENLIST;
 
@@ -282,7 +282,18 @@ std::vector<AStar::Vec2> AStar::find(const Param &param)
 				return a->f() > b->f();
 			});
 			open_list_.pop_back();
-			mapping_[current_node->pos.y * width_ + current_node->pos.x]->state = IN_CLOSELIST;
+            map_[current_node->pos.y * width_ + current_node->pos.x]->state = IN_CLOSELIST;
+
+            if (current_node->pos == param.end)
+            {
+                while (current_node->parent)
+                {
+                    paths.push_back(current_node->pos);
+                    current_node = current_node->parent;
+                }
+                std::reverse(paths.begin(), paths.end());
+                goto __end__;
+            }
 
 			find_can_reach_pos(current_node->pos, param.corner, nearby_nodes);
 
@@ -290,26 +301,15 @@ std::vector<AStar::Vec2> AStar::find(const Param &param)
 			const size_t size = nearby_nodes.size();
 			while (index < size)
 			{
-				Node *new_node = nullptr;
-				if (has_noode_in_open_list(nearby_nodes[index], new_node))
+				Node *next_node = nullptr;
+				if (has_noode_in_open_list(nearby_nodes[index], next_node))
 				{
-					handle_found_node(current_node, new_node);
+					handle_found_node(current_node, next_node);
 				}
 				else
 				{
-					new_node = new(allocator_->allocate(sizeof(Node))) Node(nearby_nodes[index]);
-					handle_not_found_node(current_node, new_node, param.end);
-
-					if (nearby_nodes[index] == param.end)
-					{
-						while (new_node->parent)
-						{
-							paths.push_back(new_node->pos);
-							new_node = new_node->parent;
-						}
-						std::reverse(paths.begin(), paths.end());
-						goto __end__;
-					}
+                    next_node = new(allocator_->allocate(sizeof(Node))) Node(nearby_nodes[index]);
+					handle_not_found_node(current_node, next_node, param.end);
 				}
 				++index;
 			}

@@ -207,7 +207,7 @@ private:
 private:
     int                 step_value_;
     int                 oblique_value_;
-    std::vector<Node *> mapping_;
+    std::vector<Node *> map_;
     uint16_t            height_;
     uint16_t            width_;
     Callback            query_cb_;
