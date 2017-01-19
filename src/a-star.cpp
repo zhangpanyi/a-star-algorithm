@@ -171,7 +171,7 @@ bool AStar::can_reach(const Vec2 &current_pos, const Vec2 &target_pos, bool corn
 		}
 		else if (corner)
 		{
-			return (can_reach(Vec2(current_pos.x + target_pos.x - current_pos.x, current_pos.y))
+			return query_cb_(target_pos) && (can_reach(Vec2(current_pos.x + target_pos.x - current_pos.x, current_pos.y))
 					&& can_reach(Vec2(current_pos.x, current_pos.y + target_pos.y - current_pos.y)));
 		}
 	}
