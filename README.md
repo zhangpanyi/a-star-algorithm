@@ -19,7 +19,7 @@ char maps[10][10] =
 	{ 1, 1, 0, 0, 1, 0, 1, 0, 0, 0 },
 	{ 0, 0, 0, 0, 0, 0, 1, 0, 1, 0 },
 };
-
+A
 // 搜索参数
 AStar::Params param;
 param.width = 10;
@@ -36,4 +36,10 @@ param.can_pass = [&](const AStar::Vec2 &pos)->bool
 BlockAllocator allocator;
 AStar algorithm(&allocator);
 auto path = algorithm.find(param);
+```
+
+# 编译代码
+```shell
+make build && cd build
+cmake ../example && make
 ```
