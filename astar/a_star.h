@@ -29,19 +29,19 @@ public:
         {
         }
 
-        Vec2(uint16_t _x, uint16_t _y) : x(_x), y(_y)
+        Vec2(uint16_t x1, uint16_t y1) : x(x1), y(y1)
         {
         }
 
-        void set(uint16_t x, uint16_t y)
+        void reset(uint16_t x1, uint16_t y1)
         {
-            this->x = x;
-            this->y = y;
+            x = x1;
+            y = y1;
         }
 
-        bool operator== (const Vec2 &that) const
+        bool operator== (const Vec2 &other) const
         {
-            return x == that.x && y == that.y;
+            return x == other.x && y == other.y;
         }
     };
 
@@ -50,17 +50,16 @@ public:
     /**
      * 搜索参数
      */
-    struct Param
+    struct Params
     {
         bool        corner;     // 允许拐角
         uint16_t    height;     // 地图高度
         uint16_t    width;      // 地图宽度
         Vec2        start;      // 起点坐标
         Vec2        end;        // 终点坐标
-        Callback    can_reach;  // 是否可通行
+        Callback    can_pass;   // 是否可通过
 
-        Param()
-            : height(0), width(0), corner(false)
+        Params() : height(0), width(0), corner(false)
         {
         }
     };
@@ -73,7 +72,7 @@ private:
     {
         NOTEXIST,               // 不存在
         IN_OPENLIST,            // 在开启列表
-        IN_CLOSELIST            // 在关闭列表
+        IN_CLOSEDLIST           // 在关闭列表
     };
 
     /**
@@ -130,7 +129,7 @@ public:
     /**
      * 执行寻路操作
      */
-    std::vector<Vec2> find(const Param &param);
+    std::vector<Vec2> find(const Params &param);
 
 private:
     /**
@@ -141,12 +140,12 @@ private:
     /**
      * 初始化参数
      */
-    void init_param(const Param &param);
+    void init(const Params &param);
 
     /**
      * 参数是否有效
      */
-    bool is_vlid_param(const Param &param);
+    bool is_vlid_params(const Params &param);
 
 private:
     /**
@@ -157,62 +156,62 @@ private:
     /**
      * 获取节点索引
      */
-    bool get_node_index(Node *node, size_t &index);
+    bool get_node_index(Node *node, size_t *index);
 
     /**
      * 计算G值
      */
-    uint16_t calcul_g_value(Node *parent_node, const Vec2 &current_pos);
+    uint16_t calcul_g_value(Node *parent, const Vec2 &current);
 
     /**
      * 计算F值
      */
-    uint16_t calcul_h_value(const Vec2 &current_pos, const Vec2 &end_pos);
+    uint16_t calcul_h_value(const Vec2 &current, const Vec2 &end);
 
     /**
      * 节点是否存在于开启列表
      */
-    bool has_noode_in_open_list(const Vec2 &pos, Node *&out);
+    bool in_open_list(const Vec2 &pos, Node *&out_node);
 
     /**
      * 节点是否存在于关闭列表
      */
-    bool has_node_in_close_list(const Vec2 &pos);
+    bool in_closed_list(const Vec2 &pos);
 
     /**
-     * 是否可到达
+     * 是否可通过
      */
-    bool can_reach(const Vec2 &pos);
+    bool can_pass(const Vec2 &pos);
 
     /**
      * 当前点是否可到达目标点
      */
-    bool can_reach(const Vec2 &current_pos, const Vec2 &target_pos, bool allow_corner);
+    bool can_pass(const Vec2 &current, const Vec2 &destination, bool allow_corner);
 
     /**
-     * 查找附近可到达的位置
+     * 查找附近可通过的节点
      */
-    void find_can_reach_pos(const Vec2 &current_pos, bool allow_corner, std::vector<Vec2> &lists);
+    void find_can_pass_nodes(const Vec2 &current, bool allow_corner, std::vector<Vec2> *out_lists);
 
     /**
      * 处理找到节点的情况
      */
-    void handle_found_node(Node *current_node, Node *target_node);
+    void handle_found_node(Node *current, Node *destination);
 
     /**
      * 处理未找到节点的情况
      */
-    void handle_not_found_node(Node *current_node, Node *target_node, const Vec2 &end_pos);
+    void handle_not_found_node(Node *current, Node *destination, const Vec2 &end);
 
 private:
-    int                 step_value_;
-    int                 oblique_value_;
-    std::vector<Node *> map_;
-    uint16_t            height_;
-    uint16_t            width_;
-    Callback            query_cb_;
-    std::vector<Node *> open_list_;
-    BlockAllocator*     allocator_;
+    int                     step_val_;
+    int                     oblique_val_;
+    std::vector<Node*>      mapping_;
+    uint16_t                height_;
+    uint16_t                width_;
+    Callback                can_pass_;
+    std::vector<Node*>      open_list_;
+    BlockAllocator*         allocator_;
 };
 
 #endif
