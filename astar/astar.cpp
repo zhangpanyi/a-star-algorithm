@@ -54,7 +54,6 @@ void AStar::clear()
     while (index < max_size)
     {
         allocator_->free(mapping_[index++], sizeof(Node));
-        index++;
     }
     open_list_.clear();
     can_pass_ = nullptr;
