@@ -37,9 +37,3 @@ BlockAllocator allocator;
 AStar algorithm(&allocator);
 auto path = algorithm.find(param);
 ```
-
-# 编译代码
-```shell
-make build && cd build
-cmake ../example && make
-```
