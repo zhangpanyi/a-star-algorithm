@@ -39,6 +39,11 @@ public:
             y = y1;
         }
 
+        int distance(const Vec2 &other) const
+        {
+            return abs(other.x - x) + abs(other.y - y);
+        }
+
         bool operator== (const Vec2 &other) const
         {
             return x == other.x && y == other.y;

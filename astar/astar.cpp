@@ -123,14 +123,14 @@ void AStar::percolate_up(size_t hole)
 // 计算G值
 inline uint16_t AStar::calcul_g_value(Node *parent, const Vec2 &current)
 {
-    uint16_t g_value = ((abs(current.y + current.x - parent->pos.y - parent->pos.x)) == 2 ? oblique_val_ : step_val_);
+    uint16_t g_value = current.distance(parent->pos) == 2 ? oblique_val_ : step_val_;
     return g_value += parent->g;
 }
 
 // 计算F值
 inline uint16_t AStar::calcul_h_value(const Vec2 &current, const Vec2 &end)
 {
-    unsigned int h_value = abs(end.y + end.x - current.y - current.x);
+    unsigned int h_value = end.distance(current);
     return h_value * step_val_;
 }
 
@@ -164,7 +164,7 @@ bool AStar::can_pass(const Vec2 &current, const Vec2 &destination, bool allow_co
             return false;
         }
 
-        if (abs(current.y + current.x - destination.y - destination.x) == 1)
+        if (destination.distance(current) == 1)
         {
             return can_pass_(destination);
         }
