@@ -1,9 +1,3 @@
-﻿/**
- * A* 算法
- * author: zhangpanyi@live.com
- * https://github.com/zhangpanyi/a-star.git
- */
-
 #ifndef __ASTAR_H__
 #define __ASTAR_H__
 
