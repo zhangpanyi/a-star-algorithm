@@ -150,7 +150,7 @@ private:
     /**
      * 二叉堆上滤
      */
-    void percolate_up(size_t hole);
+    void percolate_up(size_t hole， Node *node);
 
     /**
      * 获取节点索引
