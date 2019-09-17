@@ -108,7 +108,7 @@ void AStar::percolate_up(size_t hole, Node *node)
     while (hole > 0)
     {
         parent = (hole - 1) / 2;
-        if (open_list_[hole]->f() < open_list_[parent]->f())
+        if (node->f() < open_list_[parent]->f())
         {
             open_list_[hole] = open_list_[parent];
             hole = parent;
