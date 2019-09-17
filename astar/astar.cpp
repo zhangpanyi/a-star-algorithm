@@ -102,7 +102,7 @@ bool AStar::get_node_index(Node *node, size_t *index)
 }
 
 // 二叉堆上滤
-void AStar::percolate_up(size_t hole)
+void AStar::percolate_up(size_t hole, Node *node)
 {
     size_t parent = 0;
     while (hole > 0)
@@ -110,14 +110,15 @@ void AStar::percolate_up(size_t hole)
         parent = (hole - 1) / 2;
         if (open_list_[hole]->f() < open_list_[parent]->f())
         {
-            std::swap(open_list_[hole], open_list_[parent]);
+            open_list_[hole] = open_list_[parent];
             hole = parent;
         }
         else
         {
-            return;
+            break;
         }
     }
+    open_list_[hole] = node;
 }
 
 // 计算G值
@@ -224,7 +225,7 @@ void AStar::handle_found_node(Node *current, Node *destination)
         size_t index = 0;
         if (get_node_index(destination, &index))
         {
-            percolate_up(index);
+            percolate_up(index, destination);
         }
         else
         {
